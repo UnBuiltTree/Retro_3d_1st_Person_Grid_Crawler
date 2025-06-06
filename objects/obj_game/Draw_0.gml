@@ -59,4 +59,4 @@ else {
 }
 
 draw_set_color(c_white);
-draw_topdown_dungeon(240, 0);
+draw_topdown_dungeon(220, 0);

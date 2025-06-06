@@ -14,7 +14,10 @@ if (turning) {
         }
 
         // Move the 'to' surface into 'current' permanently
-        texd_surface_current = texd_surface_to;
+        if (surface_exists(texd_surface_current)) {
+		    surface_free(texd_surface_current);
+		}
+		texd_surface_current = texd_surface_to;
 
         texd_surface_from	= -1;
         texd_surface_to		= -1;
