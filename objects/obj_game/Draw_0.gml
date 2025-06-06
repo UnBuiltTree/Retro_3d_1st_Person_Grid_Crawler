@@ -1,4 +1,3 @@
-
 //Ensure the “current” surface exists
 if (!surface_exists(texd_surface_current)) {
     if (texd_surface_current != -1) surface_free(texd_surface_current);
@@ -59,4 +58,4 @@ else {
 }
 
 draw_set_color(c_white);
-draw_topdown_dungeon(220, 0);
+draw_topdown_dungeon_debug(220, 0);
