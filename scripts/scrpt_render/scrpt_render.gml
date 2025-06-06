@@ -6,6 +6,7 @@ function draw_textured_dungeon() {
     var fov_angle    = 45;                        // field of view in degrees
     var half_fov_rad = (fov_angle / 2) * (pi / 180);
 
+
     var frac_forward;
     if (player_facing == 0) {
         // Facing North: dy = -1
@@ -44,218 +45,120 @@ function draw_textured_dungeon() {
 
         var _subdivisions = round( lerp(24, 4, (i - 1) / (max_depth - 1)) );
 
-        // The half-width in map-space at distance i:
+		// The half-width in map-space at distance i:
         var half_view_width = tan(half_fov_rad) * i;
         var max_offset      = ceil(half_view_width);
 
         for (var abs_offset = max_offset; abs_offset >= 0; abs_offset--) {
-
+			var offset = 0;
             if (abs_offset > 0) {
-                var offset = -abs_offset;
+                offset = -abs_offset;
+                draw_cell(i, offset, frac_forward, center_x, center_y, scale_front, scale_back, top_front, bottom_front, top_back, bottom_back, _subdivisions, left_dir, right_dir);
+            }
+            {
+                offset = abs_offset;
+                draw_cell(i, offset, frac_forward, center_x, center_y, scale_front, scale_back, top_front, bottom_front, top_back, bottom_back, _subdivisions, left_dir, right_dir);
+            }
+        }
+    }
+}
 
-                var dist_along = i - frac_forward;
-                var raw_x = player_real_x 
-                          + dx[player_facing] * dist_along
-                          + dx[(player_facing + 1) mod 4] * offset;
-                var raw_y = player_real_y 
-                          + dy[player_facing] * dist_along
-                          + dy[(player_facing + 1) mod 4] * offset;
 
-                var tile_x = floor(raw_x);
-                var tile_y = floor(raw_y);
+function draw_cell(i, offset, frac_forward, center_x, center_y, scale_front, scale_back, top_front, bottom_front, top_back, bottom_back, _subdivisions, left_dir, right_dir) {
+    var dist_along = i - frac_forward;
 
-                // Make sure it’s in bounds
-                if (tile_y >= 0 
-                 && tile_y < array_length(global.map)
-                 && tile_x >= 0 
-                 && tile_x < array_length(global.map[tile_y]))
-                {
-                    var x_off_FL = (offset - 0.5) * scale_front * 3;
-                    var x_off_FR = (offset + 0.5) * scale_front * 3;
-                    var x_off_BL = (offset - 0.5) * scale_back  * 3;
-                    var x_off_BR = (offset + 0.5) * scale_back  * 3;
+    var raw_x = player_real_x + dx[player_facing] * dist_along + dx[(player_facing + 1) mod 4] * offset;
+    var raw_y = player_real_y + dy[player_facing] * dist_along + dy[(player_facing + 1) mod 4] * offset;
 
-                    var left_front  = center_x + x_off_FL;
-                    var right_front = center_x + x_off_FR;
-                    var left_back   = center_x + x_off_BL;
-                    var right_back  = center_x + x_off_BR;
+    var tile_x = floor(raw_x);
+    var tile_y = floor(raw_y);
 
-                    var is_wall = (global.map[tile_y][tile_x] == 1);
 
-                    var tint_color = get_tint_from_distance(d_front);
+    if (tile_y >= 0 && tile_y < ds_grid_height(global.map_grid) && tile_x >= 0 && tile_x < ds_grid_width(global.map_grid)) {
+        // Screen-space coordinates for this slice’s trapezoid
+        var x_off_FL = (offset - 0.5) * scale_front * 3;
+        var x_off_FR = (offset + 0.5) * scale_front * 3;
+        var x_off_BL = (offset - 0.5) * scale_back * 3;
+        var x_off_BR = (offset + 0.5) * scale_back * 3;
 
-                    if (is_wall) {
-                        // Front‐facing wall
+        var left_front  = center_x + x_off_FL;
+        var right_front = center_x + x_off_FR;
+        var left_back   = center_x + x_off_BL;
+        var right_back  = center_x + x_off_BR;
+
+        // get cell type and info
+        var cell_type = ds_grid_get(global.map_grid, tile_x, tile_y);
+        var cell_info = ds_map_find_value(tile_definitions, cell_type);
+        if (cell_info == undefined) return;
+
+        var is_wall = ds_map_find_value(cell_info, "is_wall");
+        var sprite  = ds_map_find_value(cell_info, "sprite");
+
+        var tint_color = get_tint_from_distance(dist_along);
+
+        if (is_wall) {
+            // Draw the wall slice as a vertical quad
+            draw_textured_quad(
+                left_front,  top_front,
+                right_front, top_front,
+                right_front, bottom_front,
+                left_front,  bottom_front,
+                sprite,
+                tint_color,
+                _subdivisions
+            );
+        } else {
+            // Draw the floor/ceiling slice
+            draw_textured_quad(
+                left_back,   bottom_back,
+                right_back,  bottom_back,
+                right_front, bottom_front,
+                left_front,  bottom_front,
+                sprite,
+                tint_color,
+                _subdivisions
+            );
+
+            // Check left-side wall (if offset < 1)
+            if (offset < 1) {
+                var lx = tile_x + dx[left_dir];
+                var ly = tile_y + dy[left_dir];
+                if (ly >= 0 && ly < ds_grid_height(global.map_grid) && lx >= 0 && lx < ds_grid_width(global.map_grid)) {
+                    var side_type = ds_grid_get(global.map_grid, lx, ly);
+                    var side_info = ds_map_find_value(tile_definitions, side_type);
+                    if (side_info != undefined && ds_map_find_value(side_info, "is_wall")) {
+                        var side_sprite = ds_map_find_value(side_info, "sprite");
                         draw_textured_quad(
+                            left_back,   top_back,
                             left_front,  top_front,
-                            right_front, top_front,
-                            right_front, bottom_front,
                             left_front,  bottom_front,
-                            spr_wall,
-                            tint_color,
-                            _subdivisions
-                        );
-                    }
-                    else {
-                        // Draw floor
-                        draw_textured_quad(
                             left_back,   bottom_back,
-                            right_back,  bottom_back,
-                            right_front, bottom_front,
-                            left_front,  bottom_front,
-                            spr_floor,
+                            side_sprite,
                             tint_color,
                             _subdivisions
                         );
-
-                        // If offset < 1, check left‐side wall
-                        if (offset < 1) {
-                            var lx = tile_x + dx[left_dir];
-                            var ly = tile_y + dy[left_dir];
-                            if (ly >= 0 
-                             && ly < array_length(global.map)
-                             && lx >= 0 
-                             && lx < array_length(global.map[ly])
-                             && global.map[ly][lx] == 1)
-                            {
-                                draw_textured_quad(
-                                    left_back,   top_back,
-                                    left_front,  top_front,
-                                    left_front,  bottom_front,
-                                    left_back,   bottom_back,
-                                    spr_wall,
-                                    tint_color,
-                                    _subdivisions
-                                );
-                            }
-                        }
-
-                        // If offset > -1, check right‐side wall
-                        if (offset > -1) {
-                            var rx = tile_x + dx[right_dir];
-                            var ry = tile_y + dy[right_dir];
-                            if (ry >= 0 
-                             && ry < array_length(global.map)
-                             && rx >= 0 
-                             && rx < array_length(global.map[ry])
-                             && global.map[ry][rx] == 1)
-                            {
-                                draw_textured_quad(
-                                    right_front, top_front,
-                                    right_back,  top_back,
-                                    right_back,  bottom_back,
-                                    right_front, bottom_front,
-                                    spr_wall,
-                                    tint_color,
-                                    _subdivisions
-                                );
-                            }
-                        }
                     }
                 }
             }
 
-            // Now handle right side of view
-            {
-                var offset = abs_offset;
-                var dist_along = i - frac_forward;
-
-                var raw_x = player_real_x 
-                          + dx[player_facing] * dist_along
-                          + dx[(player_facing + 1) mod 4] * offset;
-                var raw_y = player_real_y 
-                          + dy[player_facing] * dist_along
-                          + dy[(player_facing + 1) mod 4] * offset;
-
-                var tile_x = floor(raw_x);
-                var tile_y = floor(raw_y);
-
-                if (tile_y >= 0 
-                 && tile_y < array_length(global.map)
-                 && tile_x >= 0 
-                 && tile_x < array_length(global.map[tile_y]))
-                {
-                    var x_off_FL = (offset - 0.5) * scale_front * 3;
-                    var x_off_FR = (offset + 0.5) * scale_front * 3;
-                    var x_off_BL = (offset - 0.5) * scale_back  * 3;
-                    var x_off_BR = (offset + 0.5) * scale_back  * 3;
-
-                    var left_front  = center_x + x_off_FL;
-                    var right_front = center_x + x_off_FR;
-                    var left_back   = center_x + x_off_BL;
-                    var right_back  = center_x + x_off_BR;
-
-                    var is_wall = (global.map[tile_y][tile_x] == 1);
-
-                    var tint_color = get_tint_from_distance(d_front);
-
-                    if (is_wall) {
-                        // Front‐facing wall
+            // Check right-side wall (if offset > –1)
+            if (offset > -1) {
+                var rx = tile_x + dx[right_dir];
+                var ry = tile_y + dy[right_dir];
+                if (ry >= 0 && ry < ds_grid_height(global.map_grid) && rx >= 0 && rx < ds_grid_width(global.map_grid)) {
+                    var side_type = ds_grid_get(global.map_grid, rx, ry);
+                    var side_info = ds_map_find_value(tile_definitions, side_type);
+                    if (side_info != undefined && ds_map_find_value(side_info, "is_wall")) {
+                        var side_sprite = ds_map_find_value(side_info, "sprite");
                         draw_textured_quad(
-                            left_front,  top_front,
                             right_front, top_front,
-                            right_front, bottom_front,
-                            left_front,  bottom_front,
-                            spr_wall,
-                            tint_color,
-                            _subdivisions
-                        );
-                    }
-                    else {
-                        // Draw floor “back face”:
-                        draw_textured_quad(
-                            left_back,   bottom_back,
+                            right_back,  top_back,
                             right_back,  bottom_back,
                             right_front, bottom_front,
-                            left_front,  bottom_front,
-                            spr_floor,
+                            side_sprite,
                             tint_color,
                             _subdivisions
                         );
-
-                        // If offset < 1, check left‐side wall
-                        if (offset < 1) {
-                            var lx = tile_x + dx[left_dir];
-                            var ly = tile_y + dy[left_dir];
-                            if (ly >= 0 
-                             && ly < array_length(global.map)
-                             && lx >= 0 
-                             && lx < array_length(global.map[ly])
-                             && global.map[ly][lx] == 1) 
-                            {
-                                draw_textured_quad(
-                                    left_back,   top_back,
-                                    left_front,  top_front,
-                                    left_front,  bottom_front,
-                                    left_back,   bottom_back,
-                                    spr_wall,
-                                    tint_color,
-                                    _subdivisions
-                                );
-                            }
-                        }
-
-                        // If offset > -1, check right‐side wall
-                        if (offset > -1) {
-                            var rx = tile_x + dx[right_dir];
-                            var ry = tile_y + dy[right_dir];
-                            if (ry >= 0 
-                             && ry < array_length(global.map)
-                             && rx >= 0 
-                             && rx < array_length(global.map[ry])
-                             && global.map[ry][rx] == 1) 
-                            {
-                                draw_textured_quad(
-                                    right_front, top_front,
-                                    right_back,  top_back,
-                                    right_back,  bottom_back,
-                                    right_front, bottom_front,
-                                    spr_wall,
-                                    tint_color,
-                                    _subdivisions
-                                );
-                            }
-                        }
                     }
                 }
             }
@@ -341,42 +244,29 @@ function cell_tint(cx, cy, max_dist = 7) {
 
 function draw_topdown_dungeon(__x, __y) {
     var tile_size = 12;
-    var offset_x = __x;
-    var offset_y = __y;
+    var offset_x  = __x;
+    var offset_y  = __y;
 
-    // Loop through the grid and draw each cell
-    for (var _y = 0; _y < array_length(global.map); _y++) {
-        for (var _x = 0; _x < array_length(global.map[_y]); _x++) {
-            var cell = global.map[_y][_x];
+    var grid_w = ds_grid_width(global.map_grid);
+    var grid_h = ds_grid_height(global.map_grid);
+
+    // Loop through the DS grid
+    for (var _y = 0; _y < grid_h; _y++) {
+        for (var _x = 0; _x < grid_w; _x++) {
+            var cell_type = ds_grid_get(global.map_grid, _x, _y);
             var x1 = offset_x + _x * tile_size;
             var y1 = offset_y + _y * tile_size;
-            //var x2 = x1 + tile_size;
-            //var y2 = y1 + tile_size;
 
-            if (cell == 0) {
-				draw_sprite(spr_radar_tile, 0, x1, y1)
+            if (cell_type == "floor1") {
+                draw_sprite(spr_radar_tile, 0, x1, y1);
             }
         }
     }
 
-    // Draw player position
+    // Draw player position and facing arrow
     var px = offset_x + player_x * tile_size + tile_size / 2;
-    var py = offset_y + player_y * tile_size + tile_size / 2
-	
-	/*
-    draw_set_color(c_lime);
-    draw_circle(px, py, tile_size / 4, false);
-
-    var dir_x = dx[player_facing];
-    var dir_y = dy[player_facing];
-    var fx = px + dir_x * tile_size / 2;
-    var fy = py + dir_y * tile_size / 2;
-	
-	draw_line(px, py, fx, fy);
-	*/
-	
-	draw_sprite_ext(spr_radar_player, 0, px, py, 1, 1, player_facing * -90, c_red, 1)
-
+    var py = offset_y + player_y * tile_size + tile_size / 2;
+    draw_sprite_ext(spr_radar_player, 0, px, py, 1, 1, player_facing * -90, c_red, 1);
 }
 
 
