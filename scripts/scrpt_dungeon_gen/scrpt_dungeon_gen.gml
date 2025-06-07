@@ -216,7 +216,7 @@ function find_room_place(grid_, room_list, new_w, new_h, closeness, choas) {
             [_base_x - (_base_hw + half_nw + closeness), _base_y + irandom_range(-choas, choas)], // left
             [_base_x + (_base_hw + half_nw + closeness), _base_y + irandom_range(-choas, choas)]  // right
         ];
-        array_shuffle(_options);
+        _options = array_shuffle(_options);
 
         for (var _j = 0; _j < 4; _j++) {
             var _cx = _options[_j][0];
