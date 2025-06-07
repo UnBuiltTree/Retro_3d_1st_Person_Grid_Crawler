@@ -68,9 +68,3 @@ if text_toggle {
 	draw_text(0, px*3, "'C' to toggle debug view,")
 	draw_text(0, px*4, "'V' to toggle this text.")
 }
-
-var test = [0, 2, 3, 4]
-test = array_shuffle(test)
-array_foreach(test, function(value, index){ 
-	draw_text(10, 40+10*index, string(value))
-})
