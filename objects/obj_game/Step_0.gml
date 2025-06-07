@@ -33,19 +33,20 @@ if (!moving) {
     if (move_cooldown > 0) {
         move_cooldown -= 1;
     }
-
+	var new_facing = 0
     if (move_cooldown <= 0) {
+		var dir = 0
         // Check for turn‐left/right
         if (keyboard_check_pressed(ord("A"))) {
-            var new_facing = (player_facing + 3) mod 4;
-            var dir = -1; // left
+            new_facing = (player_facing + 3) mod 4;
+            dir = -1; // left
         }
         else if (keyboard_check_pressed(ord("D"))) {
-            var new_facing = (player_facing + 1) mod 4;
-            var dir = +1; // right
+            new_facing = (player_facing + 1) mod 4;
+            dir = +1; // right
         }
         else {
-            var new_facing = noone;
+            new_facing = noone;
         }
 
         if (new_facing != noone) {
