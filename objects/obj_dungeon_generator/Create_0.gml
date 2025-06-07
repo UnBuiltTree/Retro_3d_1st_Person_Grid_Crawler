@@ -62,21 +62,23 @@ render_room(
 var pending_connections = ds_list_create();
 
 //generate dungeon rooms
-for (var i = 1; i < 24; ++i) {
-    var _room_width  = irandom_range(4, 10);
+for (var i = 1; i < 32; ++i) {
+    var _room_width  = irandom_range(round(4 + (i / 8)), round(4 + (i / 4)));
     if (_room_width mod 2 == 0) _room_width++;
 
-    var _room_height = irandom_range(4, 10);
+    var _room_height = irandom_range(round(4 + (i / 8)), round(4 + (i / 4)));
     if (_room_height mod 2 == 0) _room_height++;
 
     var closeness = round(1 + (i / 8));
+	var choas = round(1 + (i / 4));
 
     var place = find_room_place(
         global.main_grid,
         dungeon_rooms,
         _room_width,
         _room_height,
-        closeness
+        closeness,
+		choas
     );
     if (place == undefined) {
         show_debug_message("Could not place room " + string(i));

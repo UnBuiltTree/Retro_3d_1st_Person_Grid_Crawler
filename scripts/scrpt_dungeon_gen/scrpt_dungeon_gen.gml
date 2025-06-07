@@ -1,23 +1,97 @@
-function create_connection(grid_, _x1, _y1, _x2, _y2) {
+function create_connection(grid_, _x1, _y1, _x2, _y2, _w1 = 1, _h1 = 1, _w2 = 1, _h2 = 1) {
     var grid_w = ds_grid_width(grid_);
     var grid_h = ds_grid_height(grid_);
 
-    // L-shaped: go horizontal first, then vertical
-    var corner_x = _x2;
-    var corner_y = _y1;
+    // Room 1 bounds
+    var _left1   = _x1 - floor(_w1 / 2);
+    var _right1  = _x1 + floor((_w1 - 1) / 2);
+    var _top1    = _y1 - floor(_h1 / 2);
+    var _bottom1 = _y1 + floor((_h1 - 1) / 2);
 
-    var start_x = min(_x1, corner_x);
-    var end_x = max(_x1, corner_x);
-    for (var _x = start_x; _x <= end_x; _x++) {
-        carve_tile(grid_, _x, _y1);
+    // Room 2 bounds
+    var _left2   = _x2 - floor(_w2 / 2);
+    var _right2  = _x2 + floor((_w2 - 1) / 2);
+    var _top2    = _y2 - floor(_h2 / 2);
+    var _bottom2 = _y2 + floor((_h2 - 1) / 2);
+
+    // ───────────────────────────────────────────────
+    // Check for vertical straight connections (shared X, exclude edges)
+    var _min_shared_x = max(_left1, _left2);
+    var _max_shared_x = min(_right1, _right2);
+    if (_min_shared_x <= _max_shared_x) {
+        var _valid_x_list = [];
+        for (var _x = _min_shared_x; _x <= _max_shared_x; _x++) {
+            if (
+                _x != _left1 && _x != _right1 &&
+                _x != _left2 && _x != _right2
+            ) {
+                array_push(_valid_x_list, _x);
+            }
+        }
+
+        if (array_length(_valid_x_list) > 0) {
+            var _shared_x = _valid_x_list[irandom(array_length(_valid_x_list) - 1)];
+            for (var _y = min(_y1, _y2); _y <= max(_y1, _y2); _y++) {
+                carve_tile(grid_, _shared_x, _y);
+            }
+            return;
+        }
     }
 
-    var start_y = min(_y1, _y2);
-    var end_y = max(_y1, _y2);
-    for (var _y = start_y; _y <= end_y; _y++) {
-        carve_tile(grid_, _x2, _y);
+    // Check for horizontal straight connections (shared Y, exclude edges)
+    var _min_shared_y = max(_top1, _top2);
+    var _max_shared_y = min(_bottom1, _bottom2);
+    if (_min_shared_y <= _max_shared_y) {
+        var _valid_y_list = [];
+        for (var _y = _min_shared_y; _y <= _max_shared_y; _y++) {
+            if (
+                _y != _top1 && _y != _bottom1 &&
+                _y != _top2 && _y != _bottom2
+            ) {
+                array_push(_valid_y_list, _y);
+            }
+        }
+
+        if (array_length(_valid_y_list) > 0) {
+            var _shared_y = _valid_y_list[irandom(array_length(_valid_y_list) - 1)];
+            for (var _x = min(_x1, _x2); _x <= max(_x1, _x2); _x++) {
+                carve_tile(grid_, _x, _shared_y);
+            }
+            return;
+        }
+    }
+
+    // ───────────────────────────────────────────────
+    // Fall back to L-bend
+    var _dx = abs(_x2 - _x1);
+    var _dy = abs(_y2 - _y1);
+    var _use_horizontal_first = _dx > _dy ? true : (_dy > _dx ? false : choose(true, false));
+
+    if (_use_horizontal_first) {
+        var _mid_x = _x1 + sign(_x2 - _x1) * floor(_dx / 2);
+        for (var _x = min(_x1, _mid_x); _x <= max(_x1, _mid_x); _x++) {
+            carve_tile(grid_, _x, _y1);
+        }
+        for (var _y = min(_y1, _y2); _y <= max(_y1, _y2); _y++) {
+            carve_tile(grid_, _mid_x, _y);
+        }
+        for (var _x = min(_mid_x, _x2); _x <= max(_mid_x, _x2); _x++) {
+            carve_tile(grid_, _x, _y2);
+        }
+    } else {
+        var _mid_y = _y1 + sign(_y2 - _y1) * floor(_dy / 2);
+        for (var _y = min(_y1, _mid_y); _y <= max(_y1, _mid_y); _y++) {
+            carve_tile(grid_, _x1, _y);
+        }
+        for (var _x = min(_x1, _x2); _x <= max(_x1, _x2); _x++) {
+            carve_tile(grid_, _x, _mid_y);
+        }
+        for (var _y = min(_mid_y, _y2); _y <= max(_mid_y, _y2); _y++) {
+            carve_tile(grid_, _x2, _y);
+        }
     }
 }
+
 
 function carve_tile(grid_, _x, _y) {
     var grid_w = ds_grid_width(grid_);
@@ -52,11 +126,17 @@ function connect_rooms(grid_, room_list, room_id1, room_id2) {
 
     var _x1 = ds_map_find_value(room1, "_x");
     var _y1 = ds_map_find_value(room1, "_y");
+    var _w1 = ds_map_find_value(room1, "width");
+    var _h1 = ds_map_find_value(room1, "height");
+
     var _x2 = ds_map_find_value(room2, "_x");
     var _y2 = ds_map_find_value(room2, "_y");
+    var _w2 = ds_map_find_value(room2, "width");
+    var _h2 = ds_map_find_value(room2, "height");
 
-    create_connection(grid_, _x1, _y1, _x2, _y2);
+    create_connection(grid_, _x1, _y1, _x2, _y2, _w1, _h1, _w2, _h2);
 }
+
 
 function get_room_center(room_list, room_id) {
     var _room = ds_list_find_value(room_list, room_id);
@@ -112,7 +192,7 @@ function render_room(grid_, _room_map) {
     }
 }
 
-function find_room_place(grid_, room_list, new_w, new_h, closeness) {
+function find_room_place(grid_, room_list, new_w, new_h, closeness, choas) {
     var grid_w = ds_grid_width(grid_);
     var grid_h = ds_grid_height(grid_);
 
@@ -133,10 +213,10 @@ function find_room_place(grid_, room_list, new_w, new_h, closeness) {
 
         // Try 4 possible directions around this room with small random offset
         var _options = [
-            [_base_x + irandom_range(-1, 1), _base_y - (_base_hh + half_nh + closeness)], // up
-            [_base_x + irandom_range(-1, 1), _base_y + (_base_hh + half_nh + closeness)], // down
-            [_base_x - (_base_hw + half_nw + closeness), _base_y + irandom_range(-1, 1)], // left
-            [_base_x + (_base_hw + half_nw + closeness), _base_y + irandom_range(-1, 1)]  // right
+            [_base_x + irandom_range(-choas, choas), _base_y - (_base_hh + half_nh + closeness)], // up
+            [_base_x + irandom_range(-choas, choas), _base_y + (_base_hh + half_nh + closeness)], // down
+            [_base_x - (_base_hw + half_nw + closeness), _base_y + irandom_range(-choas, choas)], // left
+            [_base_x + (_base_hw + half_nw + closeness), _base_y + irandom_range(-choas, choas)]  // right
         ];
         array_shuffle(_options);
 
