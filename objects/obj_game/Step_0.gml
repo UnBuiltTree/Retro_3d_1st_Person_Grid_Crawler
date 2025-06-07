@@ -104,7 +104,7 @@ if (!moving) {
                 var next_info     = ds_map_find_value(global.tile_definitions, next_tile_key);
 
                 if (next_info != undefined 
-                 && !ds_map_find_value(next_info, "is_wall"))
+                 && next_info.is_wall)
                 {
                     player_real_x = player_x;
                     player_real_y = player_y;
@@ -134,7 +134,7 @@ if (!moving) {
                 var prev_info     = ds_map_find_value(global.tile_definitions, prev_tile_key);
 
                 if (prev_info != undefined 
-                 && !ds_map_find_value(prev_info, "is_wall"))
+                 && !prev_info.is_wall)
                 {
                     player_real_x = player_x;
                     player_real_y = player_y;

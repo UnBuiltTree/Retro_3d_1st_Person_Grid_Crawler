@@ -6,42 +6,6 @@ global.TILE_DOOR  = "door1";
 global.TILE_AREA  = "area";
 
 #region Anti memory leak
-if (variable_global_exists("tile_definitions") 
-    && ds_exists(global.tile_definitions, ds_type_map))
-{
-    // “Door” map
-    if (ds_map_exists(global.tile_definitions, global.TILE_DOOR)) {
-        var _door_map = ds_map_find_value(global.tile_definitions, global.TILE_DOOR);
-        if (ds_exists(_door_map, ds_type_map)) {
-            ds_map_destroy(_door_map);
-        }
-    }
-    // “Void” map
-    if (ds_map_exists(global.tile_definitions, global.TILE_VOID)) {
-        var _void_map = ds_map_find_value(global.tile_definitions, global.TILE_VOID);
-        if (ds_exists(_void_map, ds_type_map)) {
-            ds_map_destroy(_void_map);
-        }
-    }
-    // “Wall” map
-    if (ds_map_exists(global.tile_definitions, global.TILE_WALL)) {
-        var _wall_map = ds_map_find_value(global.tile_definitions, global.TILE_WALL);
-        if (ds_exists(_wall_map, ds_type_map)) {
-            ds_map_destroy(_wall_map);
-        }
-    }
-    // “Room” (floor) map
-    if (ds_map_exists(global.tile_definitions, global.TILE_ROOM)) {
-        var _room_map = ds_map_find_value(global.tile_definitions, global.TILE_ROOM);
-        if (ds_exists(_room_map, ds_type_map)) {
-            ds_map_destroy(_room_map);
-        }
-    }
-
-    //ds_map_destroy(global.tile_definitions);
-}
-//global.tile_definitions = undefined;
-
 // Destroy global.main_grid
 if (variable_global_exists("main_grid")) {
     if (ds_exists(global.main_grid, ds_type_grid)) {
@@ -52,24 +16,25 @@ if (variable_global_exists("main_grid")) {
 global.main_grid = undefined;
 #endregion
 
-var room_map = ds_map_create();
-ds_map_add(room_map, "sprite", spr_floor);
-ds_map_add(room_map, "is_wall", false);
+var room_map = {
+	sprite : spr_floor,
+	is_wall : false,
+}
+var wall_map = {
+	sprite : spr_wall,
+	is_wall : true,
+}
+var door_map = {
+	sprite : spr_door,
+	is_wall : false
+}
+var void_map = {
+	sprite : -1,
+	is_wall : true
+}
 ds_map_add(global.tile_definitions, global.TILE_ROOM, room_map);
-
-var wall_map = ds_map_create();
-ds_map_add(wall_map, "sprite", spr_wall);
-ds_map_add(wall_map, "is_wall", true);
 ds_map_add(global.tile_definitions, global.TILE_WALL, wall_map);
-
-var door_map = ds_map_create();
-ds_map_add(door_map, "sprite", spr_door);
-ds_map_add(door_map, "is_wall", false);
 ds_map_add(global.tile_definitions, global.TILE_DOOR, door_map);
-
-var void_map = ds_map_create();
-ds_map_add(void_map, "sprite", -1);
-ds_map_add(void_map, "is_wall", true);
 ds_map_add(global.tile_definitions, global.TILE_VOID, void_map);
 
 var grid_size = 64;

@@ -87,8 +87,8 @@ function draw_cell(i, offset, frac_forward, center_x, center_y, scale_front, sca
     var cell_info = ds_map_find_value(global.tile_definitions, cell_type);
     if (cell_info == undefined) return;
 
-    var is_wall = ds_map_find_value(cell_info, "is_wall");
-    var sprite  = ds_map_find_value(cell_info, "sprite");
+    var is_wall = cell_info.is_wall;
+    var sprite  = cell_info.sprite;
     if (sprite == -1) return;
 
     // Screen-space coordinates for this slice’s trapezoid
@@ -134,8 +134,8 @@ function draw_cell(i, offset, frac_forward, center_x, center_y, scale_front, sca
             {
                 var side_type = global.main_grid[# gx2, gy2];
                 var side_info = ds_map_find_value(global.tile_definitions, side_type);
-                if (side_info != undefined && ds_map_find_value(side_info, "is_wall")) {
-                    var side_sprite = ds_map_find_value(side_info, "sprite");
+                if (side_info != undefined && side_info.is_wall) {
+                    var side_sprite = side_info.sprite;
                     if (side_sprite != -1) {
                         draw_textured_quad(
                             left_back,   top_back,
@@ -160,8 +160,8 @@ function draw_cell(i, offset, frac_forward, center_x, center_y, scale_front, sca
             {
                 var side_type = global.main_grid[# gx3, gy3];
                 var side_info = ds_map_find_value(global.tile_definitions, side_type);
-                if (side_info != undefined && ds_map_find_value(side_info, "is_wall")) {
-                    var side_sprite = ds_map_find_value(side_info, "sprite");
+                if (side_info != undefined && side_info.is_wall) {
+                    var side_sprite =side_info.sprite;
                     if (side_sprite != -1) {
                         draw_textured_quad(
                             right_front, top_front,

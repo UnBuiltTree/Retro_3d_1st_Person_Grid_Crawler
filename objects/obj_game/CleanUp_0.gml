@@ -1,6 +1,7 @@
 if (variable_global_exists("tile_definitions") 
     && ds_exists(global.tile_definitions, ds_type_map))
 {
+	/*
     // “Door” map
     if (ds_map_exists(global.tile_definitions, global.TILE_DOOR)) {
         var _door_map = ds_map_find_value(global.tile_definitions, global.TILE_DOOR);
@@ -29,9 +30,10 @@ if (variable_global_exists("tile_definitions")
             ds_map_destroy(_room_map);
         }
     }
-
+	*/
     ds_map_destroy(global.tile_definitions);
 }
+
 global.tile_definitions = undefined;
 
 
