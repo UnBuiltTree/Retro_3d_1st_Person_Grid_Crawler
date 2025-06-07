@@ -69,8 +69,8 @@ for (var i = 1; i < 32; ++i) {
     var _room_height = irandom_range(round(4 + (i / 8)), round(4 + (i / 4)));
     if (_room_height mod 2 == 0) _room_height++;
 
-    var closeness = round(1 + (i / 8));
-	var choas = round(1 + (i / 4));
+    var closeness = irandom_range(2, 4);
+	var choas = 2;
 
     var place = find_room_place(
         global.main_grid,
