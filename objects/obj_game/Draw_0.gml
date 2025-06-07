@@ -56,6 +56,8 @@ else {
 draw_set_color(c_white);
 if db_view_toggle {
 	draw_topdown_dungeon_debug(220, 0);
+} else {
+	draw_topdown_dungeon_radar(220, 40, 12)
 }
 
 if text_toggle {

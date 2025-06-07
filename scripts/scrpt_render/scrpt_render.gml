@@ -374,5 +374,66 @@ function draw_topdown_dungeon_debug(__x, __y) {
     draw_set_color(c_white);
 }
 
+function draw_topdown_dungeon_radar(__x, __y, _width) {
+    var tile_size = 2;
+    var offset_x  = __x;
+    var offset_y  = __y;
+
+    var grid_w = ds_grid_width(global.main_grid);
+    var grid_h = ds_grid_height(global.main_grid);
+
+    var player_gx = player_x + global.MAP_OFFSET_X;
+    var player_gy = player_y + global.MAP_OFFSET_Y;
+
+    // Center of the radar
+    var center_x = offset_x;
+    var center_y = offset_y;
+
+    for (var gy = 0; gy < grid_h; gy++) {
+        for (var gx = 0; gx < grid_w; gx++) {
+            var dx = gx - player_gx;
+            var dy = gy - player_gy;
+            var dist = sqrt(dx * dx + dy * dy);
+            if (dist > _width) continue;
+
+            var cell_type = global.main_grid[# gx, gy];
+            if (cell_type == "void") continue;
+
+            var x1 = center_x + dx * tile_size;
+            var y1 = center_y + dy * tile_size;
+
+            // Set color based on cell type
+            switch (cell_type) {
+                case "floor1": draw_set_color(c_dkgray); break;
+                case "wall1":  draw_set_color(c_ltgray); break;
+                case "door1":  draw_set_color(c_blue);   break;
+                default:       draw_set_color(c_yellow); break;
+            }
+
+            // Set alpha falloff
+            var alpha = 1.0 - (dist / _width);
+            draw_set_alpha(alpha);
+            draw_point(x1 + 1, y1 + 1);
+        }
+    }
+
+    draw_set_alpha(1);
+    
+    // Draw player center point
+    draw_set_color(c_red);
+    draw_point(center_x + 1, center_y + 1);
+
+    // Draw facing direction
+    draw_set_color(c_white);
+    var line_len = tile_size * 2;
+    switch (player_facing) {
+        case 0: draw_point(center_x+1, center_y); break;
+        case 1: draw_point(center_x+2, center_y+1); break;
+        case 2: draw_point(center_x+1, center_y+2); break;
+        case 3: draw_point(center_x, center_y+1); break;
+    }
+
+    draw_set_alpha(1);
+}
 
 
