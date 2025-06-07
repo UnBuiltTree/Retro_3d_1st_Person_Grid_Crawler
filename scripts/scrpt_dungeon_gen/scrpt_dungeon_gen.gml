@@ -14,7 +14,6 @@ function create_connection(grid_, _x1, _y1, _x2, _y2, _w1 = 1, _h1 = 1, _w2 = 1,
     var _top2    = _y2 - floor(_h2 / 2);
     var _bottom2 = _y2 + floor((_h2 - 1) / 2);
 
-    // ───────────────────────────────────────────────
     // Check for vertical straight connections (shared X, exclude edges)
     var _min_shared_x = max(_left1, _left2);
     var _max_shared_x = min(_right1, _right2);
@@ -61,8 +60,7 @@ function create_connection(grid_, _x1, _y1, _x2, _y2, _w1 = 1, _h1 = 1, _w2 = 1,
         }
     }
 
-    // ───────────────────────────────────────────────
-    // Fall back to L-bend
+    // Fall back to double bend
     var _dx = abs(_x2 - _x1);
     var _dy = abs(_y2 - _y1);
     var _use_horizontal_first = _dx > _dy ? true : (_dy > _dx ? false : choose(true, false));

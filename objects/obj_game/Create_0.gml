@@ -35,3 +35,6 @@ move_start_y	= player_real_y;
 move_target_x	= player_real_x;
 move_target_y	= player_real_y;
 
+text_toggle = true;
+db_view_toggle = true;
+

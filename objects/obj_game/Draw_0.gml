@@ -15,17 +15,13 @@ if (!turning) {
     surface_reset_target();
     
     draw_set_color(c_white);
-    var _color = c_white;
-    if (keyboard_check(ord("X")))      _color = c_red;
-    else if (keyboard_check(ord("V"))) _color = c_blue;
-    else if (keyboard_check(ord("Z"))) _color = c_dkgray;
 
     draw_surface_ext(
         texd_surface_current,
         0, 0,    // x,y
         1, 1,    // scale
         0,       // rot
-        _color,  // tint
+        c_white,  // tint
         1        // alpha
     );
 }
@@ -58,4 +54,17 @@ else {
 }
 
 draw_set_color(c_white);
-draw_topdown_dungeon_debug(220, 0);
+if db_view_toggle {
+	draw_topdown_dungeon_debug(220, 0);
+}
+
+if text_toggle {
+	var px = 12;
+	draw_set_font(fnt_debug)
+	draw_set_halign(fa_left)
+	draw_set_valign(fa_middle)
+	draw_text(0, px, "Press 'f11' for fullscreen,")
+	draw_text(0, px*2, "'G' to regenerate level,")
+	draw_text(0, px*3, "'C' to toggle debug view,")
+	draw_text(0, px*4, "'V' to toggle this text.")
+}
