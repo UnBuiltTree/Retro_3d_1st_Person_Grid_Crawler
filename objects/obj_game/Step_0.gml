@@ -104,7 +104,7 @@ if (!moving) {
                 var next_info     = ds_map_find_value(global.tile_definitions, next_tile_key);
 
                 if (next_info != undefined 
-                 && next_info.is_wall)
+                 && !next_info.is_wall)
                 {
                     player_real_x = player_x;
                     player_real_y = player_y;
