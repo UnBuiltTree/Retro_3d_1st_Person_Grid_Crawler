@@ -16,6 +16,10 @@ if (variable_global_exists("main_grid")) {
 global.main_grid = undefined;
 #endregion
 
+if !(variable_global_exists("tile_definitions") || !ds_exists(global.tile_definitions, ds_type_map))
+{
+	global.tile_definitions = ds_map_create()
+}
 var room_map = {
 	sprite : spr_floor,
 	is_wall : false,
@@ -32,10 +36,10 @@ var void_map = {
 	sprite : -1,
 	is_wall : true
 }
-ds_map_add(global.tile_definitions, global.TILE_ROOM, room_map);
-ds_map_add(global.tile_definitions, global.TILE_WALL, wall_map);
-ds_map_add(global.tile_definitions, global.TILE_DOOR, door_map);
-ds_map_add(global.tile_definitions, global.TILE_VOID, void_map);
+ds_map_set(global.tile_definitions, global.TILE_ROOM, room_map);
+ds_map_set(global.tile_definitions, global.TILE_WALL, wall_map);
+ds_map_set(global.tile_definitions, global.TILE_DOOR, door_map);
+ds_map_set(global.tile_definitions, global.TILE_VOID, void_map);
 
 var grid_size = 64;
 global.main_grid = ds_grid_create(grid_size, grid_size);

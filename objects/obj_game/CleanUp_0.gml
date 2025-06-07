@@ -1,5 +1,4 @@
-if (variable_global_exists("tile_definitions") 
-    && ds_exists(global.tile_definitions, ds_type_map))
+if (variable_global_exists("tile_definitions") && ds_exists(global.tile_definitions, ds_type_map))
 {
 	/*
     // “Door” map
