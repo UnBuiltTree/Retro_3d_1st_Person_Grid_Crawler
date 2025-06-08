@@ -22,6 +22,7 @@ if !(variable_global_exists("tile_definitions") || !ds_exists(global.tile_defini
 }
 var room_map = {
 	sprite : spr_floor,
+	sprite1 : spr_ceil,
 	is_wall : false,
 }
 var wall_map = {
