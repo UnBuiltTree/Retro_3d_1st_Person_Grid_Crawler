@@ -36,6 +36,7 @@ var void_map = {
 	sprite : -1,
 	is_wall : true
 }
+
 ds_map_set(global.tile_definitions, global.TILE_ROOM, room_map);
 ds_map_set(global.tile_definitions, global.TILE_WALL, wall_map);
 ds_map_set(global.tile_definitions, global.TILE_DOOR, door_map);
