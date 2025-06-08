@@ -1,72 +1,49 @@
-//Ensure the “current” surface exists
-if (!surface_exists(texd_surface_current)) {
-    if (texd_surface_current != -1) surface_free(texd_surface_current);
-    texd_surface_current = surface_create(360, 240);
-}
 
-// If we’re not turning), render one surface as usual
-if (!turning) {
-    draw_set_color(c_white);
-    surface_set_target(texd_surface_current);
-    draw_clear_alpha(c_black, 0);
 
-    draw_textured_dungeon();
+// player world center point position
+var wcx = player_real_x * tile_width + tile_width * 0.5;
+var wcy = player_real_y * tile_width + tile_width * 0.5;
+var wcz = 0;
 
-    surface_reset_target();
-    
-    draw_set_color(c_white);
+// facing
+var rad = degtorad(player_angle - 90);
 
-    draw_surface_ext(
-        texd_surface_current,
-        0, 0,    // x,y
-        1, 1,    // scale
-        0,       // rot
-        c_white,  // tint
-        1        // alpha
-    );
-}
-else {
-    var view_w = 360;
-    var offset = lerp(0, view_w * turn_direction, turn_progress);
+var dx_cam =  sin(rad) * tile_width;
+var dy_cam =  cos(rad) * tile_width;
 
-    // Draw “from” sliding out:
-    draw_set_color(c_white);
-    draw_surface_ext(
-        texd_surface_from,
-        offset,         // as offset goes from 0 → ±320
-        0,              // y
-        1, 1,           // scale
-        0,              // rotation
-        c_white,        // no extra tint
-        1               // alpha
-    );
+// camera center point position
+var cam_x = wcx;
+var cam_y = wcy;
+var cam_z = wcz + tile_tall * 0.5;
 
-    var opposite_offset = offset - (view_w * turn_direction);
-    draw_surface_ext(
-        texd_surface_to,
-        opposite_offset,
-        0,
-        1, 1,
-        0,
-        c_white,
-        1
-    );
-}
+// camera look at target point
+var look_x = wcx - dx_cam;
+var look_y = wcy - dy_cam;
+var look_z = wcz + tile_tall * 0.5;
 
-draw_set_color(c_white);
-if db_view_toggle {
-	draw_topdown_dungeon_debug(220, 0);
-} else {
-	draw_topdown_dungeon_radar(220, 40, 12)
-}
+var cam  = camera_get_active();
+var view = matrix_build_lookat(
+    cam_x, cam_y, cam_z,
+    look_x, look_y, look_z,
+    0,      0,      1
+);
+var proj = matrix_build_projection_perspective_fov(
+    45,
+    display_get_width() / display_get_height(),
+    1,
+    look_dist
+);
+camera_set_view_mat(cam, view);
+camera_set_proj_mat(cam, proj);
+camera_apply(cam);
 
-if text_toggle {
-	var px = 12;
-	draw_set_font(fnt_debug)
-	draw_set_halign(fa_left)
-	draw_set_valign(fa_middle)
-	draw_text(0, px, "Press 'f11' for fullscreen,")
-	draw_text(0, px*2, "'G' to regenerate level,")
-	draw_text(0, px*3, "'C' to toggle debug view,")
-	draw_text(0, px*4, "'V' to toggle this text.")
-}
+gpu_set_zwriteenable(true);
+gpu_set_ztestenable(true);
+draw_clear_depth(1);
+
+// draw the dungeon
+draw_dungeon();
+
+matrix_set(matrix_world, matrix_build_identity());
+gpu_set_zwriteenable(false);
+gpu_set_ztestenable(false);
