@@ -26,9 +26,7 @@ if text_toggle {
 
 surface_reset_target();
 
-draw_surface_stretched(
+draw_surface(
     ui_surf,
-    0, 0,
-    320,
-    240
+    0, 0
 );
