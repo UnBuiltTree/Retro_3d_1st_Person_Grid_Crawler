@@ -1,12 +1,12 @@
 {
   "$GMScript":"v1",
-  "%Name":"d3d_draw_wall_simple",
+  "%Name":"scrpt_format",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"d3d_draw_wall_simple",
+  "name":"scrpt_format",
   "parent":{
-    "name":"Geometry",
-    "path":"folders/Drago3D/Geometry.yy",
+    "name":"Scripts",
+    "path":"folders/Scripts.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

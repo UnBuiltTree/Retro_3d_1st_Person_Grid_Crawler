@@ -4,6 +4,8 @@ if (!variable_global_exists("tile_definitions") || !ds_exists(global.tile_defini
 
 draw_pattern = [];
 
+
+
 // 360 × 240 UI buffer
 ui_surf = surface_create(360, 240);
 if (surface_exists(ui_surf)) {
@@ -16,6 +18,9 @@ tile_width = 64;
 tile_tall  = 32;
 grid_w     = ds_grid_width(global.main_grid);
 grid_h     = ds_grid_height(global.main_grid);
+
+global.vf_wall = vertex_format_position_3d_color_texture();
+global.vf_quad = vertex_format_position_3d_color_texture();
 
 offset_x = -global.MAP_OFFSET_X;
 offset_y = -global.MAP_OFFSET_Y;
@@ -46,7 +51,7 @@ moving				= false;
 move_duration		= 20;
 move_delay			= 8;
 move_cooldown		= 0;
-move_cooldown_max	= 10;
+move_cooldown_max	= 1;
 
 move_progress	= 0;
 move_start_x	= player_x;

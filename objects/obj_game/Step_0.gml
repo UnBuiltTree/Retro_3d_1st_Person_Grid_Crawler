@@ -48,11 +48,11 @@ if (moving) {
         var try_x = player_x;
         var try_y = player_y;
 
-        if (keyboard_check_pressed(ord("W"))) {
+        if (keyboard_check_direct(ord("W"))) {
             try_x += dx_cell;
             try_y += dy_cell;
         }
-        else if (keyboard_check_pressed(ord("S"))) {
+        else if (keyboard_check_direct(ord("S"))) {
             try_x -= dx_cell;
             try_y -= dy_cell;
         }
