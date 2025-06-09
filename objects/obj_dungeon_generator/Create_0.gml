@@ -4,6 +4,7 @@ global.TILE_WALL  = "wall1";
 global.TILE_ROOM  = "floor1";
 global.TILE_DOOR  = "door1";
 global.TILE_AREA  = "area";
+global.TILE_GLASS  = "glass";
 
 #region Anti memory leak
 // Destroy global.main_grid
@@ -48,6 +49,14 @@ var door_map = {
 	is_transparent : true,
 	is_walkable : true
 }
+var glass_map = {
+	sprite : spr_glass,
+	sprite1 : spr_ceil,
+	sprite2 : spr_floor,
+	is_wall : true,
+	is_transparent : true,
+	is_walkable : false
+}
 var void_map = {
 	sprite : -1,
 	is_wall : true,
@@ -59,6 +68,7 @@ ds_map_set(global.tile_definitions, global.TILE_ROOM, room_map);
 ds_map_set(global.tile_definitions, global.TILE_WALL, wall_map);
 ds_map_set(global.tile_definitions, global.TILE_DOOR, door_map);
 ds_map_set(global.tile_definitions, global.TILE_VOID, void_map);
+ds_map_set(global.tile_definitions, global.TILE_GLASS,glass_map);
 
 var grid_size = 64;
 global.main_grid = ds_grid_create(grid_size, grid_size);
@@ -72,8 +82,8 @@ global.MAP_OFFSET_X = grid_size / 2;
 global.MAP_OFFSET_Y = grid_size / 2;
 
 // spawn room parameters
-var spawn_room_width  = 5;
-var spawn_room_height = 5;
+var spawn_room_width  = 12;
+var spawn_room_height = 12;
 var spawn_room_x = global.MAP_OFFSET_X;
 var spawn_room_y = global.MAP_OFFSET_Y;
 
@@ -165,6 +175,12 @@ for (var i = 0; i < ds_list_size(dungeon_rooms); i++) {
 
     place_doors(global.main_grid, _room);
 }
+
+ds_grid_set(global.main_grid, -2+global.MAP_OFFSET_X, 1+global.MAP_OFFSET_Y, global.TILE_WALL);
+ds_grid_set(global.main_grid, -1+global.MAP_OFFSET_X, 1+global.MAP_OFFSET_Y, global.TILE_GLASS);
+ds_grid_set(global.main_grid, 0+global.MAP_OFFSET_X, 1+global.MAP_OFFSET_Y, global.TILE_GLASS);
+ds_grid_set(global.main_grid, 1+global.MAP_OFFSET_X, 1+global.MAP_OFFSET_Y, global.TILE_GLASS);
+ds_grid_set(global.main_grid, 2+global.MAP_OFFSET_X, 1+global.MAP_OFFSET_Y, global.TILE_WALL);
 
 global.spawn_x = 0;
 global.spawn_y = 0;

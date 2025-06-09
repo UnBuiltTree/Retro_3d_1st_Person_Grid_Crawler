@@ -86,6 +86,28 @@ function draw_cell(_gx, _gy, _offset_x, _offset_y, _tile_w, _tile_t, dist) {
 		        draw_pane(_px, _py, 90, tile_info.sprite, tint_color);
 		    }
 			break;
+		case global.TILE_GLASS:
+		    var _px = (_gx + _offset_x) * _tile_w;
+		    var _py = (_gy + _offset_y) * _tile_w;
+
+		    var _top    = global.main_grid[# _gx, _gy - 1];
+			var _top_info = ds_map_find_value(global.tile_definitions, _top);
+		    var _bottom = global.main_grid[# _gx, _gy + 1];
+			var _bottom_info = ds_map_find_value(global.tile_definitions, _bottom);
+		    var _left   = global.main_grid[# _gx - 1, _gy];
+			var _left_info = ds_map_find_value(global.tile_definitions, _left);
+		    var _right  = global.main_grid[# _gx + 1, _gy];
+			var _right_info = ds_map_find_value(global.tile_definitions, _right);
+			
+			draw_floor(_px, _py, 0, tile_info.sprite1, tint_color);
+			draw_floor(_px, _py, tile_tall, tile_info.sprite2, tint_color);
+
+		    if (_left_info.is_wall && _right_info.is_wall) {
+		        draw_pane(_px, _py, 0, tile_info.sprite, tint_color);
+		    }
+		    else if (_top_info.is_wall && _bottom_info.is_wall) {
+		        draw_pane(_px, _py, 90, tile_info.sprite, tint_color);
+		    };
 	    default:
 	        break;
 	}
