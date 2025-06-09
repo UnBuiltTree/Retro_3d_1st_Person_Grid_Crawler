@@ -35,7 +35,7 @@ player_y		= global.spawn_y;
 player_real_x	= player_x;
 player_real_y	= player_y;
 player_angle	= 0;
-max_depth		= 7;
+max_depth		= 12;
 look_dist = (tile_width*max_depth*2)
 
 dx	= [0, 1, 0, -1];

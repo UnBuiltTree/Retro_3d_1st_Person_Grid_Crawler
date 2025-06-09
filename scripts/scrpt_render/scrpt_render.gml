@@ -75,9 +75,6 @@ function draw_cell(_gx, _gy, _offset_x, _offset_y, _tile_w, _tile_t, dist) {
 		    var _bottom = global.main_grid[# _gx, _gy + 1];
 		    var _left   = global.main_grid[# _gx - 1, _gy];
 		    var _right  = global.main_grid[# _gx + 1, _gy];
-			var _open = 1;
-			if dist > tile_info.open_dist { _open = 0}
-		    var _tex = sprite_get_texture(tile_info.sprite, _open);
 			
 			draw_floor(_px, _py, 0, tile_info.sprite1, tint_color);
 			draw_floor(_px, _py, tile_tall, tile_info.sprite2, tint_color);

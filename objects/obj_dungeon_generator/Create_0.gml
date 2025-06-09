@@ -20,29 +20,39 @@ if !(variable_global_exists("tile_definitions") || !ds_exists(global.tile_defini
 {
 	global.tile_definitions = ds_map_create()
 }
+
+/* properties
+	 sprite...		- sprites used in this tile, accending numbers
+	 is_wall		- used in generation
+	 is_transparent - tiles that have transparent sprites
+	 is_walkable	- can the player walk on this tile?
+*/
 var room_map = {
 	sprite : spr_floor,
 	sprite1 : spr_ceil,
 	is_wall : false,
-	is_transparent : false
+	is_transparent : false,
+	is_walkable : true
 }
 var wall_map = {
 	sprite : spr_wall,
 	is_wall : true,
-	is_transparent : false
+	is_transparent : false,
+	is_walkable : false
 }
 var door_map = {
 	sprite : spr_door_open,
 	sprite1 : spr_ceil,
 	sprite2 : spr_floor,
-	open_dist : 2,
 	is_wall : false,
-	is_transparent : true
+	is_transparent : true,
+	is_walkable : true
 }
 var void_map = {
 	sprite : -1,
 	is_wall : true,
-	is_transparent : true
+	is_transparent : true,
+	is_walkable : true //debug reasons
 }
 
 ds_map_set(global.tile_definitions, global.TILE_ROOM, room_map);

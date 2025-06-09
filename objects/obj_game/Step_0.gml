@@ -66,8 +66,7 @@ if (moving) {
             {
                 var tile_key = global.main_grid[# gx, gy];
                 var tile_info = ds_map_find_value(global.tile_definitions, tile_key);
-
-                if (tile_info != undefined && !tile_info.is_wall) {
+                if (tile_info != undefined && tile_info.is_walkable) {
                     moving         = true;
                     move_progress  = 0;
                     move_start_x   = player_real_x;
