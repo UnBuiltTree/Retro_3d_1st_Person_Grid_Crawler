@@ -24,18 +24,25 @@ var room_map = {
 	sprite : spr_floor,
 	sprite1 : spr_ceil,
 	is_wall : false,
+	is_transparent : false
 }
 var wall_map = {
 	sprite : spr_wall,
 	is_wall : true,
+	is_transparent : false
 }
 var door_map = {
 	sprite : spr_door,
-	is_wall : false
+	sprite1 : spr_ceil,
+	sprite2 : spr_floor,
+	open_dist : 2,
+	is_wall : false,
+	is_transparent : true
 }
 var void_map = {
 	sprite : -1,
-	is_wall : true
+	is_wall : true,
+	is_transparent : true
 }
 
 ds_map_set(global.tile_definitions, global.TILE_ROOM, room_map);
@@ -142,6 +149,12 @@ for (var j = 0; j < _pc_count; j++) {
     );
 }
 ds_list_destroy(pending_connections);
+
+for (var i = 0; i < ds_list_size(dungeon_rooms); i++) {
+    var _room = ds_list_find_value(dungeon_rooms, i);
+
+    place_doors(global.main_grid, _room);
+}
 
 global.spawn_x = 0;
 global.spawn_y = 0;

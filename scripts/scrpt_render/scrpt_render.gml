@@ -2,112 +2,154 @@ function draw_dungeon() {
     var grid_w = ds_grid_width(global.main_grid);
     var grid_h = ds_grid_height(global.main_grid);
 
-    var px = floor(player_x + global.MAP_OFFSET_X);
-    var py = floor(player_y + global.MAP_OFFSET_Y);
+    var px = floor(player_real_x + global.MAP_OFFSET_X);
+    var py = floor(player_real_y + global.MAP_OFFSET_Y);
 
-    var rpx = player_real_x + global.MAP_OFFSET_X;
+	var rpx = player_real_x + global.MAP_OFFSET_X;
     var rpy = player_real_y + global.MAP_OFFSET_Y;
-	
-	var bpx = rpx + lengthdir_x(1, player_angle + 180);
-	var bpy = rpy + lengthdir_y(1, player_angle + 180);
-	
+    var bpx = rpx + lengthdir_x(1, player_angle + 180);
+    var bpy = rpy + lengthdir_y(1, player_angle + 180);
+
     var pa = -player_angle;
-    var cone_half_angle = 45; // degrees (90° cone total)
+    var cone_half_angle = 45;
     var cone_half_rad   = degtorad(cone_half_angle);
 
-    var x_min = max(0, px - max_depth);
-    var x_max = min(grid_w - 1, px + max_depth);
-    var y_min = max(0, py - max_depth);
-    var y_max = min(grid_h - 1, py + max_depth);
-
-    // Reset world matrix
     matrix_set(matrix_world, matrix_build_identity());
 
-    for (var gy = y_min; gy <= y_max; gy++) {
-        for (var gx = x_min; gx <= x_max; gx++) {
-            // Vector from player to cell
-            var vec_x = gx - bpx;
-            var vec_y = gy - bpy;
+    for (var i = 0; i < array_length(draw_pattern); i++) {
+        var off = draw_pattern[i];
+        var dx  = off[0];
+        var dy  = off[1];
 
-            // Distance check
-            var dist = point_distance(rpx, rpy, gx, gy);
-            if (dist > max_depth) continue;
+        var gx = px + dx;
+        var gy = py + dy;
+        if (gx < 0 || gx >= grid_w || gy < 0 || gy >= grid_h) continue;
 
-            // Angle from player to cell
-            var ang_to_cell = point_direction(0, 0, vec_x, -vec_y); // invert Y because GameMaker's Y is downward
-            var rel_angle = angle_difference(pa, ang_to_cell);
+        var wx = (player_real_x + global.MAP_OFFSET_X) + dx;
+        var wy = (player_real_y + global.MAP_OFFSET_Y) + dy;
 
-            // Only draw if inside the viewing cone
-            if (abs(rel_angle) <= cone_half_angle) {
-                var tint_color = get_tint_from_distance(dist);
-                draw_cell(gx, gy, offset_x, offset_y, tile_width, tile_tall, tint_color);
-            }
-        }
+        var dist = point_distance(rpx, rpy, gx, gy);
+
+        // Cone check
+        var vec_x = wx - bpx;
+        var vec_y = wy - bpy;
+        var ang_to_cell = point_direction(0, 0, vec_x, -vec_y);
+        var rel_angle = angle_difference(pa, ang_to_cell);
+        if (abs(rel_angle) > cone_half_angle) continue;
+		
+        draw_cell(gx, gy, offset_x, offset_y, tile_width, tile_tall, dist);
     }
 
     matrix_set(matrix_world, matrix_build_identity());
 }
 
-function draw_cell(_gx, _gy, _offset_x, _offset_y, _tile_w, _tile_t, tint_color) {
+function draw_cell(_gx, _gy, _offset_x, _offset_y, _tile_w, _tile_t, dist) {
 	var tile_key = global.main_grid[# _gx, _gy];
     var tile_info = ds_map_find_value(global.tile_definitions, tile_key);
 	if (tile_info = undefined) { return }
-    // Only draw walls for now
-    if (global.main_grid[# _gx, _gy] == global.TILE_WALL) {
-        var _px = (_gx + _offset_x) * _tile_w;
-        var _py = (_gy + _offset_y) * _tile_w;
-        d3d_draw_block(
-            _px,               _py,               0,
-            _px + _tile_w,     _py + _tile_w,     _tile_t,
-            sprite_get_texture(tile_info.sprite, 0),
-			1,
-			1,
-			tint_color,
-			1
-        );
-    }
-	if (global.main_grid[# _gx, _gy] == global.TILE_ROOM) {
-        var _px = (_gx + _offset_x) * _tile_w;
-        var _py = (_gy + _offset_y) * _tile_w;
+	if tile_info.is_transparent {
+		gpu_set_zwriteenable(false);
+	} else {
+		gpu_set_zwriteenable(true);
+	}
+	var tint_color = get_tint_from_distance(dist);
 
+	switch (tile_key) {
+	    case global.TILE_WALL:
+	        var _px = (_gx + _offset_x) * _tile_w;
+	        var _py = (_gy + _offset_y) * _tile_w;
+	        d3d_draw_block(
+	            _px,               _py,               0,
+	            _px + _tile_w,     _py + _tile_w,     _tile_t,
+	            sprite_get_texture(tile_info.sprite, 0),
+				1,
+				1,
+				tint_color,
+				1
+	        );
+	        break;
+		case global.TILE_ROOM:
+	        var _px = (_gx + _offset_x) * _tile_w;
+	        var _py = (_gy + _offset_y) * _tile_w;
+			d3d_draw_floor(
+	            _px,               _py,               _tile_t,
+	            _px + _tile_w,     _py + _tile_w,     _tile_t,
+	            sprite_get_texture(tile_info.sprite, 0),
+				1,
+				1,
+				tint_color,
+				1
+	        );
+			d3d_draw_floor(
+	            _px,               _py,               0,
+	            _px + _tile_w,     _py + _tile_w,     0,
+	            sprite_get_texture(tile_info.sprite1, 0),
+				1,
+				1,
+				tint_color,
+				1
+	        );
+			break;
+		case global.TILE_DOOR:
+		    var _px = (_gx + _offset_x) * _tile_w;
+		    var _py = (_gy + _offset_y) * _tile_w;
 
-		/*
-        d3d_draw_block(
-            _px,               _py,               0,
-            _px + _tile_w,     _py + _tile_w,     _tile_t,
-            sprite_get_texture(spr_wall, 0),
-			1,
-			1,
-			tint_color,
-			1
-        );*/
-		d3d_draw_floor(
-            _px,               _py,               _tile_t,
-            _px + _tile_w,     _py + _tile_w,     _tile_t,
-            sprite_get_texture(tile_info.sprite, 0),
-			1,
-			1,
-			tint_color,
-			1
-        );
-		d3d_draw_floor(
-            _px,               _py,               0,
-            _px + _tile_w,     _py + _tile_w,     0,
-            sprite_get_texture(tile_info.sprite1, 0),
-			1,
-			1,
-			tint_color,
-			1
-        );
-    }
+		    var _top    = global.main_grid[# _gx, _gy - 1];
+		    var _bottom = global.main_grid[# _gx, _gy + 1];
+		    var _left   = global.main_grid[# _gx - 1, _gy];
+		    var _right  = global.main_grid[# _gx + 1, _gy];
+			var _open = 1;
+			if dist > tile_info.open_dist { _open = 0}
+		    var _tex = sprite_get_texture(tile_info.sprite, _open);
+			
+			d3d_draw_floor(
+	            _px,               _py,               _tile_t,
+	            _px + _tile_w,     _py + _tile_w,     _tile_t,
+	            sprite_get_texture(tile_info.sprite2, 0),
+				1,
+				1,
+				tint_color,
+				1
+	        );
+			d3d_draw_floor(
+	            _px,               _py,               0,
+	            _px + _tile_w,     _py + _tile_w,     0,
+	            sprite_get_texture(tile_info.sprite1, 0),
+				1,
+				1,
+				tint_color,
+				1
+	        );
+
+		    if (_left == global.TILE_WALL && _right == global.TILE_WALL) {
+		        d3d_draw_wall(
+		            _px,               _py + _tile_w * 0.5, 0,
+		            _px + _tile_w,     _py + _tile_w * 0.5, _tile_t,
+		            _tex,
+		            1, 1, tint_color, 1
+		        );
+		    }
+		    else if (_top == global.TILE_WALL && _bottom == global.TILE_WALL) {
+		        d3d_draw_wall(
+		            _px + _tile_w * 0.5, _py,               0,
+		            _px + _tile_w * 0.5, _py + _tile_w,     _tile_t,
+		            _tex,
+		            1, 1, tint_color, 1
+		        );
+		    }
+			break;
+	    default:
+	        break;
+	}
 }
 
 function get_tint_from_distance(dist) {
-    var t = clamp(dist / max_depth, 0, 1);
+    var t = clamp(dist / (max_depth-1), 0, 1);
     var brightness = 1.0 - t;
     var cval = floor(brightness * 255);
     return make_color_rgb(cval, cval, cval);
 }
+
 
 function draw_topdown_dungeon_debug(__x, __y) {
     var tile_size = 2;
