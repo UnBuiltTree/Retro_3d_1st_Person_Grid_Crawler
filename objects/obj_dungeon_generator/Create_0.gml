@@ -32,7 +32,7 @@ var wall_map = {
 	is_transparent : false
 }
 var door_map = {
-	sprite : spr_door,
+	sprite : spr_door_open,
 	sprite1 : spr_ceil,
 	sprite2 : spr_floor,
 	open_dist : 2,
