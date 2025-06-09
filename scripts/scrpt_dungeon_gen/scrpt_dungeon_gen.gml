@@ -307,5 +307,46 @@ function closest_room(room_list, room_id) {
 }
 
 
+function place_doors(grid_, room_) {
+    var grid_w = ds_grid_width(grid_);
+    var grid_h = ds_grid_height(grid_);
+
+    var _cx = ds_map_find_value(room_, "_x");
+    var _cy = ds_map_find_value(room_, "_y");
+    var _w  = ds_map_find_value(room_, "width");
+    var _h  = ds_map_find_value(room_, "height");
+
+    var _x0 = _cx - floor(_w / 2);
+    var _y0 = _cy - floor(_h / 2);
+    var _x1 = _x0 + _w - 1;
+    var _y1 = _y0 + _h - 1;
+
+    // Horizontal edges
+    for (var _x = _x0; _x <= _x1; _x++) {
+        // Top edge
+        if (grid_[# _x, _y0] == global.TILE_ROOM) {
+            grid_[# _x, _y0] = global.TILE_DOOR;
+        }
+        // Bottom edge
+        if (grid_[# _x, _y1] == global.TILE_ROOM) {
+            grid_[# _x, _y1] = global.TILE_DOOR;
+        }
+    }
+
+    // Vertical edges
+    for (var _y = _y0; _y <= _y1; _y++) {
+        // Left edge
+        if (grid_[# _x0, _y] == global.TILE_ROOM) {
+            grid_[# _x0, _y] = global.TILE_DOOR;
+        }
+        // Right edge
+        if (grid_[# _x1, _y] == global.TILE_ROOM) {
+            grid_[# _x1, _y] = global.TILE_DOOR;
+        }
+    }
+}
+
+
+
 
 

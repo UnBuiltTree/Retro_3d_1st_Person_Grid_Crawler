@@ -2,6 +2,8 @@ if (!variable_global_exists("tile_definitions") || !ds_exists(global.tile_defini
     global.tile_definitions = ds_map_create();
 }
 
+draw_pattern = [];
+
 // 360 × 240 UI buffer
 ui_surf = surface_create(360, 240);
 if (surface_exists(ui_surf)) {
@@ -54,6 +56,20 @@ move_target_y	= player_y;
 
 text_toggle = true;
 db_view_toggle = true;
+
+function build_draw_pattern(radius) {
+    for (var _layer = radius; _layer >= 1; _layer--) {
+        for (var dy = -_layer; dy <= _layer; dy++) {
+            var dx = _layer - abs(dy);
+            array_push(draw_pattern, [ dx, dy ]);
+            if (dx != 0) array_push(draw_pattern, [ -dx, dy ]);
+        }
+    }
+
+    array_push(draw_pattern, [ 0, 0 ]);
+}
+
+build_draw_pattern(max_depth);
 
 gpu_set_zwriteenable(true);
 gpu_set_ztestenable(true);
