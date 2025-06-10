@@ -48,6 +48,12 @@ function process_game_initialize() {
 	    is_transparent: true,
 	    is_walkable: false
 	})
+	create_tile("void", {
+	    sprite: -1,
+	    is_wall: false,
+	    is_transparent: false,
+	    is_walkable: true // for debug
+	})
 	
 	global.initialized = true
 	return true
