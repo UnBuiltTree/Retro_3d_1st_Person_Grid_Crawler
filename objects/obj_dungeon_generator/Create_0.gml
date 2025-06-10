@@ -2,6 +2,8 @@ if(instance_number(obj_dungeon_generator) > 1){
 	throw("obj_dungeon_generator is a singleton!")
 }
 
+dbe_view_toggle = 1;
+
 // Reset main grid
 ds_grid_clear(global.main_grid, global.TILE_VOID)
 
@@ -33,8 +35,8 @@ for (var i = 1; i < 42; ++i) {
     var _room_height = irandom_range(round(3 + (i / 8)), round(7 + (i / 4)));
     if (_room_height mod 2 == 0) _room_height++;
 
-    var closeness = irandom_range(1, round(1 + (i / 4)));
-	var choas = 12
+    var closeness = 3;
+	var choas = 0;
 
     var new_room = find_room_place(
         global.main_grid,
@@ -51,7 +53,7 @@ for (var i = 1; i < 42; ++i) {
 	var new_index = ds_list_size(dungeon_rooms)
 	new_room[$ "id"] = new_index
 	ds_list_add(dungeon_rooms, new_room);
-	var _blob = choose(0, 0)
+	var _blob = choose(0, 1)
 	if _blob == 1 {
     render_room_blob(
         global.main_grid,
@@ -89,12 +91,12 @@ for (var j = 0; j < _pc_count; j++) {
 }
 ds_list_destroy(pending_connections);
 
-
+/*
 for (var i = 0; i < ds_list_size(dungeon_rooms); i++) {
     var _room = ds_list_find_value(dungeon_rooms, i);
 
     place_doors(global.main_grid, _room);
-}
+}*/
 
 
 global.spawn_x = 0

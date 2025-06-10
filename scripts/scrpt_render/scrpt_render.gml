@@ -129,6 +129,7 @@ function draw_topdown_dungeon_debug(__x, __y) {
             var y1 = offset_y + gy * tile_size;
             switch (cell_type) {
                 case "wall":  draw_set_color(c_blue);   break;
+				case "door":  draw_set_color(c_fuchsia);   break;
                 default:       draw_set_color(c_white); break;
             }
 			draw_point(x1+1, y1+1);
@@ -239,8 +240,8 @@ function draw_room_debug_view(room_list, offset_x, offset_y, scale) {
         draw_rectangle(left, top, right, bottom, true);
 
         // Draw center point
-        var cx = offset_x + _room.x * scale + scale * 0.5;
-        var cy = offset_y + _room.y * scale + scale * 0.5;
+        var cx = offset_x + _room.x * scale;
+        var cy = offset_y + _room.y * scale;
 
         draw_set_color(c_red);
         draw_circle(cx, cy, 2, true);
@@ -249,8 +250,8 @@ function draw_room_debug_view(room_list, offset_x, offset_y, scale) {
     // Draw connections
     for (var i = 0; i < room_count; i++) {
         var _room = ds_list_find_value(room_list, i);
-        var cx1 = offset_x + _room.x * scale + scale * 0.5;
-        var cy1 = offset_y + _room.y * scale + scale * 0.5;
+        var cx1 = offset_x + _room.x * scale;
+        var cy1 = offset_y + _room.y * scale;
 
         var conn_count = ds_list_size(_room.connected_rooms);
         for (var j = 0; j < conn_count; j++) {
@@ -267,8 +268,8 @@ function draw_room_debug_view(room_list, offset_x, offset_y, scale) {
             }
 
             if (other_room != undefined) {
-                var cx2 = offset_x + other_room.x * scale + scale * 0.5;
-                var cy2 = offset_y + other_room.y * scale + scale * 0.5;
+                var cx2 = offset_x + other_room.x * scale;
+                var cy2 = offset_y + other_room.y * scale;
 
                 draw_set_color(c_red);
                 draw_line(cx1, cy1, cx2, cy2);

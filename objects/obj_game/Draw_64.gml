@@ -10,7 +10,7 @@ draw_set_color(c_white);
 if db_view_toggle {
 	draw_topdown_dungeon_debug(180, 0);
 } else {
-	draw_topdown_dungeon_radar(220, 40, 16)
+	draw_topdown_dungeon_radar(80, 40, 6)
 }
 
 if text_toggle {
