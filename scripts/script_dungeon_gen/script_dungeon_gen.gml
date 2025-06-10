@@ -28,7 +28,14 @@ function create_connection(grid_, room1, room2) {
         if (array_length(_valid_x_list) > 0) {
             var _shared_x = _valid_x_list[irandom(array_length(_valid_x_list) - 1)];
             for (var _y = min(_y1, _y2); _y <= max(_y1, _y2); _y++) {
-                carve_tile(grid_, _shared_x, _y);
+				if  grid_[# _shared_x, _y] == global.TILE_WALL {
+					carve_tile(grid_, _shared_x, _y);
+					if is_perimeter(grid_, room1, _shared_x, _y) {
+						grid_[# _shared_x, _y] = global.TILE_DOOR;
+					} else if is_perimeter(grid_, room2, _shared_x, _y) {
+						grid_[# _shared_x, _y] = global.TILE_DOOR;
+					}
+				}
             }
             return;
         }
@@ -51,7 +58,17 @@ function create_connection(grid_, room1, room2) {
         if (array_length(_valid_y_list) > 0) {
             var _shared_y = _valid_y_list[irandom(array_length(_valid_y_list) - 1)];
             for (var _x = min(_x1, _x2); _x <= max(_x1, _x2); _x++) {
-                carve_tile(grid_, _x, _shared_y);
+				if  grid_[# _x, _shared_y] == global.TILE_WALL {
+					carve_tile(grid_, _x, _shared_y);
+					
+					if is_perimeter(grid_, room1, _x, _shared_y) {
+						grid_[# _x, _shared_y] = global.TILE_DOOR;
+					} else if is_perimeter(grid_, room2, _x, _shared_y) {
+						grid_[# _x, _shared_y] = global.TILE_DOOR;
+					}
+				} else {
+					carve_tile(grid_, _x, _shared_y);
+				}
             }
             return;
         }
@@ -89,19 +106,21 @@ function create_connection(grid_, room1, room2) {
 
 
 function carve_tile(grid_, _x, _y) {
-    var grid_w = ds_grid_width(grid_)
-    var grid_h = ds_grid_height(grid_)
 
-    if (_x >= 0 && _x < grid_w && _y >= 0 && _y < grid_h) {
-        grid_[# _x, _y] = global.TILE_ROOM;
+    if (_x >= 0 && _x < grid_size && _y >= 0 && _y < grid_size) {
+		if check_adjacent_for(_x, _y, global.TILE_VOID) == -1 {
+			grid_[# _x, _y] = global.TILE_WALL;
+		} else {
+			grid_[# _x, _y] = global.TILE_ROOM;
+		}
 
         for (var dx = -1; dx <= 1; dx++) {
             for (var dy = -1; dy <= 1; dy++) {
                 var _nx = _x + dx;
                 var _ny = _y + dy;
 
-                if ((dx != 0 || dy != 0) && _nx >= 0 && _nx < grid_w && _ny >= 0 && _ny < grid_h) {
-                    if (grid_[# _nx, _ny] != global.TILE_ROOM) {
+                if ((dx != 0 || dy != 0) && _nx >= 0 && _nx < grid_size && _ny >= 0 && _ny < grid_size) {
+                    if (grid_[# _nx, _ny] != global.TILE_ROOM) and (grid_[# _nx, _ny] != global.TILE_DOOR) {
                         grid_[# _nx, _ny] = global.TILE_WALL;
                     }
                 }
@@ -125,14 +144,12 @@ function connect_rooms(grid_, room_list, room_id1, room_id2) {
 
 function render_room(grid_, _room_map) {
 	var bounds = _room_map.get_bounds()
-    var grid_w = ds_grid_width(grid_)
-    var grid_h = ds_grid_height(grid_)
 
     for (var yy = 0; yy <  _room_map.height; yy++) {
         for (var xx = 0; xx < _room_map.width; xx++) {
             var cx = bounds.left + xx;
             var cy = bounds.top + yy;
-            if (cx >= 0 && cx < grid_w && cy >= 0 && cy < grid_h) {
+            if (cx >= 0 && cx < grid_size && cy >= 0 && cy < grid_size) {
                 // Perimeter → WALL unless it's already a DOOR
                 if (xx == 0 || xx == _room_map.width-1 || yy == 0 || yy ==  _room_map.height-1) {
                     if (grid_[# cx, cy] != global.TILE_DOOR) {
@@ -321,6 +338,24 @@ function place_doors(grid_, room_) {
     }
 }
 
+function is_perimeter(grid_, _room_map, _x, _y){
+	var bounds = _room_map.get_bounds()
+	for (var yy = 0; yy <  _room_map.height; yy++) {
+	        for (var xx = 0; xx < _room_map.width; xx++) {
+	            var cx = bounds.left + xx;
+	            var cy = bounds.top + yy;
+	            if (cx >= 0 && cx < grid_size && cy >= 0 && cy < grid_size) {
+	                if (xx == 0 || xx == _room_map.width-1 || yy == 0 || yy ==  _room_map.height-1) {
+	                    if (cx == _x and cy == _y) {
+							//show_debug_message("is p is ture");
+							return true
+	                    }
+	                }
+	            }
+	        }
+	    }
+		return false
+	}
 
 
 
