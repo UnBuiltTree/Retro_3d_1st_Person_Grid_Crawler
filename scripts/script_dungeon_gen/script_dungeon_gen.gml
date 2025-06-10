@@ -147,8 +147,8 @@ function render_room(grid_, _room_map) {
 }
 
 function render_room_blob(grid_, _room_map) {
-    var _w = _room_map.width + 2
-    var _h = _room_map.height + 2
+    var _w = _room_map.width + 1
+    var _h = _room_map.height + 1
 	var new_room = new struct_room(-1, _room_map.x, _room_map.y, _w, _h)
 	var bounds = new_room.get_bounds()
 	new_room.clear()
