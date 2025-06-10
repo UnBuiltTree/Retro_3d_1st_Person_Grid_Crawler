@@ -63,7 +63,7 @@ for (var i = 1; i < 42; ++i) {
         global.main_grid,
         ds_list_find_value(dungeon_rooms, new_index)
 		);
-		last_room = ds_list_find_value(dungeon_rooms, ds_list_size(dungeon_rooms) - 1);
+		last_room = ds_list_find_value(dungeon_rooms, ds_list_size(dungeon_rooms) - 1); // Does size change?
 	}
 
    // var nearest = closest_room(dungeon_rooms, new_index);
