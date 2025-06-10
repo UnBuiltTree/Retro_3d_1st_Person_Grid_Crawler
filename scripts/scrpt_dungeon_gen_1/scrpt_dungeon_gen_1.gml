@@ -123,24 +123,17 @@ function connect_rooms(grid_, room_list, room_id1, room_id2) {
 }
 
 function render_room(grid_, _room_map) {
-    var _x_center = ds_map_find_value(_room_map, "_x");
-    var _y_center = ds_map_find_value(_room_map, "_y");
-    var width     = ds_map_find_value(_room_map, "width");
-    var height    = ds_map_find_value(_room_map, "height");
-
-    var _x_start = _x_center - floor(width/2);
-    var _y_start = _y_center - floor(height/2);
-
+	var bounds = _room_map.get_bounds()
     var grid_w = ds_grid_width(grid_)
     var grid_h = ds_grid_height(grid_)
 
-    for (var yy = 0; yy < height; yy++) {
-        for (var xx = 0; xx < width; xx++) {
-            var cx = _x_start + xx;
-            var cy = _y_start + yy;
+    for (var yy = 0; yy <  _room_map.height; yy++) {
+        for (var xx = 0; xx < _room_map.width; xx++) {
+            var cx = bounds.left + xx;
+            var cy = bounds.top + yy;
             if (cx >= 0 && cx < grid_w && cy >= 0 && cy < grid_h) {
                 // Perimeter → WALL unless it's already a DOOR
-                if (xx == 0 || xx == width-1 || yy == 0 || yy == height-1) {
+                if (xx == 0 || xx == _room_map.width-1 || yy == 0 || yy ==  _room_map.height-1) {
                     if (grid_[# cx, cy] != global.TILE_DOOR) {
                         grid_[# cx, cy] = global.TILE_WALL;
                     }
@@ -154,16 +147,13 @@ function render_room(grid_, _room_map) {
 }
 
 function render_room_blob(grid_, _room_map) {
-    var _x_center = ds_map_find_value(_room_map, "_x");
-    var _y_center = ds_map_find_value(_room_map, "_y");
-    var _w        = ds_map_find_value(_room_map, "width")+1;
-    var _h        = ds_map_find_value(_room_map, "height")+1;
+    var _w = _room_map.width + 1
+    var _h = _room_map.height + 1
 
     var grid_w = ds_grid_width(grid_)
     var grid_h = ds_grid_height(grid_)
-
-    var _x0 = _x_center - floor(_w / 2);
-    var _y0 = _y_center - floor(_h / 2);
+	
+	var bounds = _room_map.get_bounds()
 
     var _target_tiles = irandom_range(floor((_w * _h) * 0.6), floor((_w * _h) * 0.8));
 
@@ -214,8 +204,8 @@ function render_room_blob(grid_, _room_map) {
     for (var _yy = 0; _yy < _h; _yy++) {
         for (var _xx = 0; _xx < _w; _xx++) {
             if (_blob[# _xx, _yy] == 1) {
-                var _gx = _x0 + _xx;
-                var _gy = _y0 + _yy;
+                var _gx = bounds.left + _xx;
+                var _gy = bounds.top + _yy;
 
                 if (_gx >= 0 && _gx < grid_w && _gy >= 0 && _gy < grid_h) {
                     carve_tile(grid_, _gx, _gy);
@@ -270,7 +260,7 @@ function find_room_place(grid_, room_list, new_w, new_h, closeness, choas) {
 				var _o_bounds = _check.get_bounds()
 
                 var _dx = 0;
-                if (_new_right < _o_bounds.left)      _dx = _o_bounds.left - new_bounds.right;
+                if (new_bounds.right < _o_bounds.left)      _dx = _o_bounds.left - new_bounds.right;
                 else if (_o_bounds.right < new_bounds.left) _dx = new_bounds.left - _o_bounds.right;
 
                 var _dy = 0;
@@ -301,37 +291,29 @@ function place_doors(grid_, room_) {
     var grid_w = ds_grid_width(grid_);
     var grid_h = ds_grid_height(grid_);
 
-    var _cx = ds_map_find_value(room_, "_x");
-    var _cy = ds_map_find_value(room_, "_y");
-    var _w  = ds_map_find_value(room_, "width");
-    var _h  = ds_map_find_value(room_, "height");
-
-    var _x0 = _cx - floor(_w / 2);
-    var _y0 = _cy - floor(_h / 2);
-    var _x1 = _x0 + _w - 1;
-    var _y1 = _y0 + _h - 1;
+	var bounds = room_.get_bounds()
 
     // Horizontal edges
-    for (var _x = _x0; _x <= _x1; _x++) {
+    for (var _x = bounds.left; _x <= bounds.right; _x++) {
         // Top edge
-        if (grid_[# _x, _y0] == global.TILE_ROOM) {
-            grid_[# _x, _y0] = global.TILE_DOOR;
+        if (grid_[# _x, bounds.top] == global.TILE_ROOM) {
+            grid_[# _x, bounds.top] = global.TILE_DOOR;
         }
         // Bottom edge
-        if (grid_[# _x, _y1] == global.TILE_ROOM) {
-            grid_[# _x, _y1] = global.TILE_DOOR;
+        if (grid_[# _x, bounds.bottom] == global.TILE_ROOM) {
+            grid_[# _x, bounds.bottom] = global.TILE_DOOR;
         }
     }
 
     // Vertical edges
-    for (var _y = _y0; _y <= _y1; _y++) {
+    for (var _y = bounds.top; _y <= bounds.bottom; _y++) {
         // Left edge
-        if (grid_[# _x0, _y] == global.TILE_ROOM) {
-            grid_[# _x0, _y] = global.TILE_DOOR;
+        if (grid_[# bounds.left, _y] == global.TILE_ROOM) {
+            grid_[# bounds.left, _y] = global.TILE_DOOR;
         }
         // Right edge
-        if (grid_[# _x1, _y] == global.TILE_ROOM) {
-            grid_[# _x1, _y] = global.TILE_DOOR;
+        if (grid_[# bounds.right, _y] == global.TILE_ROOM) {
+            grid_[# bounds.right, _y] = global.TILE_DOOR;
         }
     }
 }

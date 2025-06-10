@@ -13,16 +13,9 @@ var spawn_room_y = global.MAP_OFFSET_Y;
 
 dungeon_rooms = ds_list_create();
 
-// Create the spawn room
-create_room(
-    global.main_grid,
-    dungeon_rooms,
-    0,					// room_id
-    spawn_room_x,		// x_center
-    spawn_room_y,		// y_center
-    spawn_room_width,	// width
-    spawn_room_height	// height
-);
+var spawn_room = new struct_room(0, spawn_room_x, spawn_room_y, spawn_room_width, spawn_room_height)
+ds_list_add(dungeon_rooms, spawn_room);
+
 render_room_blob(
     global.main_grid,
     ds_list_find_value(dungeon_rooms, 0)
@@ -73,7 +66,8 @@ for (var i = 1; i < 42; ++i) {
 		last_room = ds_list_find_value(dungeon_rooms, ds_list_size(dungeon_rooms) - 1);
 	}
 
-    var nearest = closest_room(dungeon_rooms, new_index);
+   // var nearest = closest_room(dungeon_rooms, new_index);
+   var nearest = new_room.closest_room(dungeon_rooms)
     if (nearest != undefined) {
         // Store the connection [from_index, to_index]
         var conn = [ new_index, nearest ];

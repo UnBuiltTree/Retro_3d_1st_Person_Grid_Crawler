@@ -14,7 +14,7 @@ function struct_room(room_id, x_center, y_center, room_w, room_h) constructor
 		connected_rooms = undefined
 	}
 	
-	closest_room = function(room_list, room_id) {
+	closest_room = function(room_list) {
 	    var nRooms = ds_list_size(room_list)
 	    //if (nRooms < 2) return undefined; // No other room to compare
 
@@ -23,7 +23,7 @@ function struct_room(room_id, x_center, y_center, room_w, room_h) constructor
 
 	    for (var i = 0; i < nRooms; i++) {
 			// get room
-			var i_room = ds_list_find_value(room_list, room_id);
+			var i_room = ds_list_find_value(room_list, i);
 	        if (i_room == undefined or i_room.id == id) continue;
 
 
