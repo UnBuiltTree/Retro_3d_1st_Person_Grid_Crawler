@@ -14,8 +14,6 @@ instance_create_layer(0, 0, "Instances", obj_dungeon_generator);
 
 tile_width = 64;
 tile_tall  = 48;
-grid_w = grid_size;
-grid_h = grid_size;
 
 offset_x = -global.MAP_OFFSET_X;
 offset_y = -global.MAP_OFFSET_Y;

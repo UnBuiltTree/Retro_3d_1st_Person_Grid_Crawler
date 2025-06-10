@@ -1,27 +1,5 @@
-
-
-#region Anti memory leak
-// Destroy global.main_grid
-if (variable_global_exists("main_grid")) {
-    if (ds_exists(global.main_grid, ds_type_grid)) {
-        ds_grid_destroy(global.main_grid);
-    }
-}
-
-global.main_grid = undefined;
-#endregion
-
-
-//var grid_size = 64;
-//global.main_grid = ds_grid_create(grid_size, grid_size);
-for (var gx = 0; gx < grid_size; gx++) {
-    for (var gy = 0; gy < grid_size; gy++) {
-        ds_grid_set(global.main_grid, gx, gy, global.TILE_VOID);
-    }
-}
-
-global.MAP_OFFSET_X = grid_size / 2;
-global.MAP_OFFSET_Y = grid_size / 2;
+// Reset main grid
+ds_grid_clear(global.main_grid, global.TILE_VOID)
 
 // spawn room parameters
 var spawn_room_width  = 12;
