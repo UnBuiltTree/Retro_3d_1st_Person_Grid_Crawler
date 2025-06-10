@@ -1,28 +1,25 @@
-function create_connection(grid_, _x1, _y1, _x2, _y2, _w1 = 1, _h1 = 1, _w2 = 1, _h2 = 1) {
+function create_connection(grid_, room1, room2) {
     var grid_w = ds_grid_width(grid_)
     var grid_h = ds_grid_height(grid_)
 
     // Room 1 bounds
-    var _left1   = _x1 - floor(_w1 / 2);
-    var _right1  = _x1 + floor((_w1 - 1) / 2);
-    var _top1    = _y1 - floor(_h1 / 2);
-    var _bottom1 = _y1 + floor((_h1 - 1) / 2);
+	var bounds1 = room1.get_bounds()
+	var bounds2 = room2.get_bounds()
 
-    // Room 2 bounds
-    var _left2   = _x2 - floor(_w2 / 2);
-    var _right2  = _x2 + floor((_w2 - 1) / 2);
-    var _top2    = _y2 - floor(_h2 / 2);
-    var _bottom2 = _y2 + floor((_h2 - 1) / 2);
+	var _x1 = room1.x
+	var _y1 = room1.y
+	var _x2 = room2.x
+	var _y2 = room2.y
 
     // Check for vertical straight connections (shared X, exclude edges)
-    var _min_shared_x = max(_left1, _left2);
-    var _max_shared_x = min(_right1, _right2);
+    var _min_shared_x = max(bounds1.left, bounds2.left);
+    var _max_shared_x = min(bounds1.right, bounds2.right);
     if (_min_shared_x <= _max_shared_x) {
         var _valid_x_list = [];
         for (var _x = _min_shared_x; _x <= _max_shared_x; _x++) {
             if (
-                _x != _left1 && _x != _right1 &&
-                _x != _left2 && _x != _right2
+                _x != bounds1.left && _x != bounds1.right &&
+                _x != bounds2.left && _x != bounds2.right
             ) {
                 array_push(_valid_x_list, _x);
             }
@@ -38,14 +35,14 @@ function create_connection(grid_, _x1, _y1, _x2, _y2, _w1 = 1, _h1 = 1, _w2 = 1,
     }
 
     // Check for horizontal straight connections (shared Y, exclude edges)
-    var _min_shared_y = max(_top1, _top2);
-    var _max_shared_y = min(_bottom1, _bottom2);
+    var _min_shared_y = max(bounds1.top, bounds2.top);
+    var _max_shared_y = min(bounds1.bottom, bounds2.bottom);
     if (_min_shared_y <= _max_shared_y) {
         var _valid_y_list = [];
         for (var _y = _min_shared_y; _y <= _max_shared_y; _y++) {
             if (
-                _y != _top1 && _y != _bottom1 &&
-                _y != _top2 && _y != _bottom2
+                _y != bounds1.top && _y != bounds1.bottom &&
+                _y != bounds2.top && _y != bounds2.bottom
             ) {
                 array_push(_valid_y_list, _y);
             }
@@ -122,41 +119,7 @@ function connect_rooms(grid_, room_list, room_id1, room_id2) {
         return;
     }
 
-    var _x1 = ds_map_find_value(room1, "_x");
-    var _y1 = ds_map_find_value(room1, "_y");
-    var _w1 = ds_map_find_value(room1, "width");
-    var _h1 = ds_map_find_value(room1, "height");
-
-    var _x2 = ds_map_find_value(room2, "_x");
-    var _y2 = ds_map_find_value(room2, "_y");
-    var _w2 = ds_map_find_value(room2, "width");
-    var _h2 = ds_map_find_value(room2, "height");
-
-    create_connection(grid_, _x1, _y1, _x2, _y2, _w1, _h1, _w2, _h2);
-}
-
-
-function get_room_center(room_list, room_id) {
-    var _room = ds_list_find_value(room_list, room_id);
-    if (_room == undefined) {
-        show_debug_message("Error: get_room_center - invalid room ID: " + string(room_id));
-        return undefined;
-    }
-
-    var _x = ds_map_find_value(_room, "_x");
-    var _y = ds_map_find_value(_room, "_y");
-    return [_x, _y];
-}
-
-function create_room(grid_, room_list, room_id, x_center, y_center, room_w, room_h) {
-    var room_ = ds_map_create();
-    ds_map_add(room_, "id", room_id);
-    ds_map_add(room_, "_x", x_center);
-    ds_map_add(room_, "_y", y_center);
-    ds_map_add(room_, "width", room_w);
-    ds_map_add(room_, "height", room_h);
-    ds_map_add(room_, "connected_rooms", ds_list_create());
-    ds_list_add(room_list, room_);
+    create_connection(grid_, room1, room2);
 }
 
 function render_room(grid_, _room_map) {
@@ -264,73 +227,55 @@ function render_room_blob(grid_, _room_map) {
     ds_grid_destroy(_blob);
 }
 
-/*
 function find_room_place(grid_, room_list, new_w, new_h, closeness, choas) {
     var grid_w = ds_grid_width(grid_);
     var grid_h = ds_grid_height(grid_);
 
     var half_nw = floor(new_w / 2);
     var half_nh = floor(new_h / 2);
+	
     var n_rooms = ds_list_size(room_list);
     if (n_rooms <= 0) return undefined;
-
     for (var _i = 0; _i < n_rooms; _i++) {
         var _base = ds_list_find_value(room_list, _i);
-
-        var _base_x = ds_map_find_value(_base, "_x");
-        var _base_y = ds_map_find_value(_base, "_y");
-        var _base_w = ds_map_find_value(_base, "width");
-        var _base_h = ds_map_find_value(_base, "height");
-        var _base_hw = floor(_base_w / 2);
-        var _base_hh = floor(_base_h / 2);
+		var bounds = _base.get_bounds()
 
         // Try 4 possible directions around this room with small random offset
         var _options = [
-            [_base_x + irandom_range(-choas, choas), _base_y - (_base_hh + half_nh + closeness)], // up
-            [_base_x + irandom_range(-choas, choas), _base_y + (_base_hh + half_nh + closeness)], // down
-            [_base_x - (_base_hw + half_nw + closeness), _base_y + irandom_range(-choas, choas)], // left
-            [_base_x + (_base_hw + half_nw + closeness), _base_y + irandom_range(-choas, choas)]  // right
+            [_base.x + irandom_range(-choas, choas), bounds.top - (half_nh + closeness)], // up
+            [_base.x + irandom_range(-choas, choas), bounds.bottom + (half_nh + closeness)], // down
+            [bounds.left - (half_nw + closeness), _base.y + irandom_range(-choas, choas)], // left
+            [bounds.right + (half_nw + closeness), _base.y + irandom_range(-choas, choas)]  // right
         ];
         _options = array_shuffle(_options);
 
         for (var _j = 0; _j < 4; _j++) {
-            var _cx = _options[_j][0];
+			var _cx = _options[_j][0];
             var _cy = _options[_j][1];
-
-            if (_cx - half_nw < 0 || _cx + half_nw >= grid_w ||
-                _cy - half_nh < 0 || _cy + half_nh >= grid_h) {
+			var new_room = new struct_room(-1, _cx, _cy, new_w, new_h) 
+			var new_bounds = new_room.get_bounds()
+        
+            if (new_bounds.left < 0 || new_bounds.right >= grid_w || 
+			new_bounds.top < 0 || new_bounds.bottom >= grid_h) {
+				new_room.clear()
+				delete new_room
                 continue;
             }
-
-            var _new_left   = _cx - half_nw;
-            var _new_top    = _cy - half_nh;
-            var _new_right  = _new_left + new_w - 1;
-            var _new_bottom = _new_top  + new_h - 1;
 
             var _valid = true;
 
             for (var _k = 0; _k < n_rooms; _k++) {
                 var _check = ds_list_find_value(room_list, _k);
-
-                var _ox = ds_map_find_value(_check, "_x");
-                var _oy = ds_map_find_value(_check, "_y");
-                var _ow = ds_map_find_value(_check, "width");
-                var _oh = ds_map_find_value(_check, "height");
-                var _ohw = floor(_ow / 2);
-                var _ohh = floor(_oh / 2);
-
-                var _o_left   = _ox - _ohw;
-                var _o_top    = _oy - _ohh;
-                var _o_right  = _o_left + _ow - 1;
-                var _o_bottom = _o_top  + _oh - 1;
+				
+				var _o_bounds = _check.get_bounds()
 
                 var _dx = 0;
-                if (_new_right < _o_left)      _dx = _o_left - _new_right;
-                else if (_o_right < _new_left) _dx = _new_left - _o_right;
+                if (_new_right < _o_bounds.left)      _dx = _o_bounds.left - new_bounds.right;
+                else if (_o_bounds.right < new_bounds.left) _dx = new_bounds.left - _o_bounds.right;
 
                 var _dy = 0;
-                if (_new_bottom < _o_top)      _dy = _o_top - _new_bottom;
-                else if (_o_bottom < _new_top) _dy = _new_top - _o_bottom;
+                if (new_bounds.bottom < _o_bounds.top)      _dy = _o_bounds.top - new_bounds.bottom;
+                else if (_o_bounds.bottom < new_bounds.top) _dy = new_bounds.top - _o_bounds.bottom;
 
                 var _gap = sqrt(_dx * _dx + _dy * _dy);
 
@@ -339,50 +284,18 @@ function find_room_place(grid_, room_list, new_w, new_h, closeness, choas) {
                     break;
                 }
             }
-
+	
             if (_valid) {
-                return [_cx, _cy];
-            }
+                return new_room;
+            } else {
+				new_room.clear()
+				delete new_room
+			}
         }
     }
 
     return undefined;
 }
-*/
-
-
-function closest_room(room_list, room_id) {
-    var nRooms = ds_list_size(room_list);
-    if (nRooms < 2) return undefined; // No other room to compare
-
-    var base_xy = get_room_center(room_list, room_id);
-    if (base_xy == undefined) return undefined;
-
-    var base_x = base_xy[0];
-    var base_y = base_xy[1];
-
-    var closest_id = undefined;
-    var best_dist = infinity;
-
-    for (var i = 0; i < nRooms; i++) {
-        if (i == room_id) continue;
-
-        var other_xy = get_room_center(room_list, i);
-        if (other_xy == undefined) continue;
-
-        var dx = other_xy[0] - base_x;
-        var dy = other_xy[1] - base_y;
-        var dist = sqrt(dx * dx + dy * dy);
-
-        if (dist < best_dist) {
-            best_dist = dist;
-            closest_id = i;
-        }
-    }
-
-    return closest_id;
-}
-
 
 function place_doors(grid_, room_) {
     var grid_w = ds_grid_width(grid_);

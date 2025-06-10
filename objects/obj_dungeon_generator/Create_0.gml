@@ -43,7 +43,7 @@ for (var i = 1; i < 42; ++i) {
     var closeness = irandom_range(1, round(1 + (i / 4)));
 	var choas = 12
 
-    var place = find_room_place(
+    var new_room = find_room_place(
         global.main_grid,
         dungeon_rooms,
         _room_width,
@@ -51,22 +51,14 @@ for (var i = 1; i < 42; ++i) {
         closeness,
 		choas
     );
-    if (place == undefined) {
+    if (new_room == undefined) {
         show_debug_message("Could not place room " + string(i));
         continue;
     }
+	var new_index = ds_list_size(dungeon_rooms) - 1
+	new_room[$ "id"] = new_index
+	ds_list_add(dungeon_rooms, new_room);
 
-    create_room(
-        global.main_grid,
-        dungeon_rooms,
-        i,			// room_id = i
-        place[0],	// x_center
-        place[1],	// y_center
-        _room_width,
-        _room_height
-    );
-
-    var new_index = ds_list_size(dungeon_rooms) - 1;
 	var _blob = choose(0,1)
 	if _blob {
     render_room_blob(
