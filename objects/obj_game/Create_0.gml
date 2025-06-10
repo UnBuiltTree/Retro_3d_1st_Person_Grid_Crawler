@@ -1,3 +1,7 @@
+if(instance_number(obj_game) > 1){
+	throw("obj_game is a singleton!")
+}
+
 draw_pattern = [];
 
 global.frame = 0;

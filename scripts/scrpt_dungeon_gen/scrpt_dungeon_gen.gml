@@ -168,8 +168,8 @@ function render_room(grid_, _room_map) {
     var _x_start = _x_center - floor(width/2);
     var _y_start = _y_center - floor(height/2);
 
-    var grid_w = grid_size
-    var grid_h = grid_size
+    var grid_w = ds_grid_width(grid_)
+    var grid_h = ds_grid_height(grid_)
 
     for (var yy = 0; yy < height; yy++) {
         for (var xx = 0; xx < width; xx++) {
@@ -196,8 +196,8 @@ function render_room_blob(grid_, _room_map) {
     var _w        = ds_map_find_value(_room_map, "width")+1;
     var _h        = ds_map_find_value(_room_map, "height")+1;
 
-    var grid_w = grid_size
-    var grid_h = grid_size
+    var grid_w = ds_grid_width(grid_)
+    var grid_h = ds_grid_height(grid_)
 
     var _x0 = _x_center - floor(_w / 2);
     var _y0 = _y_center - floor(_h / 2);

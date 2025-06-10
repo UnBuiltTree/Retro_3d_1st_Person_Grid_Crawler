@@ -1,7 +1,8 @@
-// Reset main grid
-if !(variable_global_exists("main_grid")) {
-	global.main_grid = ds_grid_create(grid_size, grid_size)
+if(instance_number(obj_dungeon_generator) > 1){
+	throw("obj_dungeon_generator is a singleton!")
 }
+
+// Reset main grid
 ds_grid_clear(global.main_grid, global.TILE_VOID)
 
 // spawn room parameters
