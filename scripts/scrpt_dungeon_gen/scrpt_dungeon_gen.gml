@@ -190,6 +190,80 @@ function render_room(grid_, _room_map) {
     }
 }
 
+function render_room_blob(grid_, _room_map) {
+    var _x_center = ds_map_find_value(_room_map, "_x");
+    var _y_center = ds_map_find_value(_room_map, "_y");
+    var _w        = ds_map_find_value(_room_map, "width")+1;
+    var _h        = ds_map_find_value(_room_map, "height")+1;
+
+    var grid_w = ds_grid_width(grid_);
+    var grid_h = ds_grid_height(grid_);
+
+    var _x0 = _x_center - floor(_w / 2);
+    var _y0 = _y_center - floor(_h / 2);
+
+    var _target_tiles = irandom_range(floor((_w * _h) * 0.6), floor((_w * _h) * 0.8));
+
+    var _blob = ds_grid_create(_w, _h);
+    ds_grid_set_region(_blob, 0, 0, _w, _h, 0);
+
+    var _open = ds_list_create();
+    var _cx = floor(_w / 2);
+    var _cy = floor(_h / 2);
+    ds_list_add(_open, [_cx, _cy]);
+
+    var _filled = 0;
+
+    while (_filled < _target_tiles && ds_list_size(_open) > 0) {
+        var _idx = irandom(ds_list_size(_open) - 1);
+        var _pick = ds_list_find_value(_open, _idx);
+        ds_list_delete(_open, _idx);
+
+        var _x = _pick[0];
+        var _y = _pick[1];
+
+        if (_x < 0 || _x >= _w || _y < 0 || _y >= _h) continue;
+        if (_blob[# _x, _y] == 1) continue;
+
+        _blob[# _x, _y] = 1;
+        _filled++;
+
+        var _neighbors = [
+            [_x - 1, _y],
+            [_x + 1, _y],
+            [_x, _y - 1],
+            [_x, _y + 1]
+        ];
+        _neighbors = array_shuffle(_neighbors);
+
+        for (var _i = 0; _i < 4; _i++) {
+            var _nx = _neighbors[_i][0];
+            var _ny = _neighbors[_i][1];
+
+            if (_nx >= 0 && _nx < _w && _ny >= 0 && _ny < _h && _blob[# _nx, _ny] == 0) {
+                ds_list_add(_open, [_nx, _ny]);
+            }
+        }
+    }
+
+    ds_list_destroy(_open);
+
+    for (var _yy = 0; _yy < _h; _yy++) {
+        for (var _xx = 0; _xx < _w; _xx++) {
+            if (_blob[# _xx, _yy] == 1) {
+                var _gx = _x0 + _xx;
+                var _gy = _y0 + _yy;
+
+                if (_gx >= 0 && _gx < grid_w && _gy >= 0 && _gy < grid_h) {
+                    carve_tile(grid_, _gx, _gy);
+                }
+            }
+        }
+    }
+
+    ds_grid_destroy(_blob);
+}
+
 function find_room_place(grid_, room_list, new_w, new_h, closeness, choas) {
     var grid_w = ds_grid_width(grid_);
     var grid_h = ds_grid_height(grid_);
@@ -274,6 +348,8 @@ function find_room_place(grid_, room_list, new_w, new_h, closeness, choas) {
     return undefined;
 }
 
+
+
 function closest_room(room_list, room_id) {
     var nRooms = ds_list_size(room_list);
     if (nRooms < 2) return undefined; // No other room to compare
@@ -305,6 +381,49 @@ function closest_room(room_list, room_id) {
 
     return closest_id;
 }
+
+
+function place_doors(grid_, room_) {
+    var grid_w = ds_grid_width(grid_);
+    var grid_h = ds_grid_height(grid_);
+
+    var _cx = ds_map_find_value(room_, "_x");
+    var _cy = ds_map_find_value(room_, "_y");
+    var _w  = ds_map_find_value(room_, "width");
+    var _h  = ds_map_find_value(room_, "height");
+
+    var _x0 = _cx - floor(_w / 2);
+    var _y0 = _cy - floor(_h / 2);
+    var _x1 = _x0 + _w - 1;
+    var _y1 = _y0 + _h - 1;
+
+    // Horizontal edges
+    for (var _x = _x0; _x <= _x1; _x++) {
+        // Top edge
+        if (grid_[# _x, _y0] == global.TILE_ROOM) {
+            grid_[# _x, _y0] = global.TILE_DOOR;
+        }
+        // Bottom edge
+        if (grid_[# _x, _y1] == global.TILE_ROOM) {
+            grid_[# _x, _y1] = global.TILE_DOOR;
+        }
+    }
+
+    // Vertical edges
+    for (var _y = _y0; _y <= _y1; _y++) {
+        // Left edge
+        if (grid_[# _x0, _y] == global.TILE_ROOM) {
+            grid_[# _x0, _y] = global.TILE_DOOR;
+        }
+        // Right edge
+        if (grid_[# _x1, _y] == global.TILE_ROOM) {
+            grid_[# _x1, _y] = global.TILE_DOOR;
+        }
+    }
+}
+
+
+
 
 
 

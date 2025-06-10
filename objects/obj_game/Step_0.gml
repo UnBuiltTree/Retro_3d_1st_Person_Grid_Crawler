@@ -48,11 +48,11 @@ if (moving) {
         var try_x = player_x;
         var try_y = player_y;
 
-        if (keyboard_check_pressed(ord("W"))) {
+        if (keyboard_check_direct(ord("W"))) {
             try_x += dx_cell;
             try_y += dy_cell;
         }
-        else if (keyboard_check_pressed(ord("S"))) {
+        else if (keyboard_check_direct(ord("S"))) {
             try_x -= dx_cell;
             try_y -= dy_cell;
         }
@@ -66,8 +66,7 @@ if (moving) {
             {
                 var tile_key = global.main_grid[# gx, gy];
                 var tile_info = ds_map_find_value(global.tile_definitions, tile_key);
-
-                if (tile_info != undefined && !tile_info.is_wall) {
+                if (tile_info != undefined && tile_info.is_walkable) {
                     moving         = true;
                     move_progress  = 0;
                     move_start_x   = player_real_x;
@@ -95,4 +94,11 @@ if (keyboard_check_pressed(ord("V"))) {
 
 if (keyboard_check_pressed(ord("C"))) {
     db_view_toggle = !db_view_toggle;
+}
+
+// Step Event
+frame_timer++;
+if (frame_timer >= frame_speed) {
+    frame_timer = 0;
+    global.frame = (global.frame + 1) mod 14;
 }
