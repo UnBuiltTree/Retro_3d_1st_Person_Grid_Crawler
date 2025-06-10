@@ -1,2 +1,1 @@
-/// @description Insert description here
-// You can write your code in this editor
+draw_room_debug_view(dungeon_rooms, 180, 0, 2)

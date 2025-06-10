@@ -121,14 +121,14 @@ function draw_topdown_dungeon_debug(__x, __y) {
     for (var gy = 0; gy < grid_h; gy++) {
         for (var gx = 0; gx < grid_w; gx++) {
             var cell_type = global.main_grid[# gx, gy];
-            if (cell_type == "void") or (cell_type == "wall") {
+            if (cell_type == "void") {
                 continue; // skip void cells
             }
 
             var x1 = offset_x + gx * tile_size;
             var y1 = offset_y + gy * tile_size;
             switch (cell_type) {
-                //case "door":  draw_set_color(c_grey);   break;
+                case "wall":  draw_set_color(c_blue);   break;
                 default:       draw_set_color(c_white); break;
             }
 			draw_point(x1+1, y1+1);
@@ -219,6 +219,64 @@ function draw_topdown_dungeon_radar(__x, __y, _width) {
     draw_point(center_x, center_y);
 
     draw_set_color(c_white);
+}
+
+function draw_room_debug_view(room_list, offset_x, offset_y, scale) {
+	draw_set_font(fnt_debug)
+    var room_count = ds_list_size(room_list);
+
+    for (var i = 0; i < room_count; i++) {
+        var _room = ds_list_find_value(room_list, i);
+        var bounds = _room.get_bounds();
+
+        var left   = offset_x + bounds.left   * scale;
+        var right  = offset_x + bounds.right * scale;
+        var top    = offset_y + bounds.top    * scale;
+        var bottom = offset_y + bounds.bottom * scale;
+
+        // Draw room rectangle
+        draw_set_color(c_red);
+        draw_rectangle(left, top, right, bottom, true);
+
+        // Draw center point
+        var cx = offset_x + _room.x * scale + scale * 0.5;
+        var cy = offset_y + _room.y * scale + scale * 0.5;
+
+        draw_set_color(c_red);
+        draw_circle(cx, cy, 2, true);
+    }
+
+    // Draw connections
+    for (var i = 0; i < room_count; i++) {
+        var _room = ds_list_find_value(room_list, i);
+        var cx1 = offset_x + _room.x * scale + scale * 0.5;
+        var cy1 = offset_y + _room.y * scale + scale * 0.5;
+
+        var conn_count = ds_list_size(_room.connected_rooms);
+        for (var j = 0; j < conn_count; j++) {
+            var conn_id = ds_list_find_value(_room.connected_rooms, j);
+            var other_room = undefined;
+
+            // Find the other room by ID
+            for (var k = 0; k < room_count; k++) {
+                var test_room = ds_list_find_value(room_list, k);
+                if (test_room.id == conn_id) {
+                    other_room = test_room;
+                    break;
+                }
+            }
+
+            if (other_room != undefined) {
+                var cx2 = offset_x + other_room.x * scale + scale * 0.5;
+                var cy2 = offset_y + other_room.y * scale + scale * 0.5;
+
+                draw_set_color(c_red);
+                draw_line(cx1, cy1, cx2, cy2);
+            }
+        }
+    }
+
+    draw_set_color(c_white); // reset
 }
 
 

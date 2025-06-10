@@ -39,9 +39,9 @@ function struct_room(room_id, x_center, y_center, room_w, room_h) constructor
 	get_bounds = function(){
 		return {
 			left   : x - floor(width / 2),
-		    right  : x + ceil(width / 2),
+		    right  : x + ceil(width / 2)-1,
 		    top    : y - floor(height / 2),
-		    bottom : y + ceil(height / 2),
+		    bottom : y + ceil(height / 2)-1,
 		}
 	}
 }

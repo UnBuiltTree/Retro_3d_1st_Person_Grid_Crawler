@@ -109,5 +109,3 @@ if (last_room != undefined) {
     global.spawn_x = _x_center - global.MAP_OFFSET_X;
     global.spawn_y = _y_center - global.MAP_OFFSET_Y;
 }
-
-instance_destroy();
