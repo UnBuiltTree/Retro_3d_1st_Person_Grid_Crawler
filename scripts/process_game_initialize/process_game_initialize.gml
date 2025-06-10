@@ -43,6 +43,12 @@ function process_game_initialize() {
 	    is_transparent: true,
 	    is_walkable: false
 	})
+	create_tile("void", {
+	    sprite: -1,
+	    is_wall: false,
+	    is_transparent: false,
+	    is_walkable: true // for debug
+	})
 	global.vf_wall = vertex_format_position_3d_color_texture()
 	global.vf_quad = vertex_format_position_3d_color_texture()
 	global.main_grid = ds_grid_create(grid_size, grid_size)
