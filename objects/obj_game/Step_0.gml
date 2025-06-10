@@ -95,3 +95,10 @@ if (keyboard_check_pressed(ord("V"))) {
 if (keyboard_check_pressed(ord("C"))) {
     db_view_toggle = !db_view_toggle;
 }
+
+// Step Event
+frame_timer++;
+if (frame_timer >= frame_speed) {
+    frame_timer = 0;
+    global.frame = (global.frame + 1) mod 14;
+}

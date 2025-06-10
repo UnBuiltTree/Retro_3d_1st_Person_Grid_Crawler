@@ -86,13 +86,35 @@ function draw_cell(_gx, _gy, _offset_x, _offset_y, _tile_w, _tile_t, dist) {
 		        draw_pane(_px, _py, 90, tile_info.sprite, tint_color);
 		    }
 			break;
+		case global.TILE_GLASS:
+		    var _px = (_gx + _offset_x) * _tile_w;
+		    var _py = (_gy + _offset_y) * _tile_w;
+
+		    var _top    = global.main_grid[# _gx, _gy - 1];
+			var _top_info = ds_map_find_value(global.tile_definitions, _top);
+		    var _bottom = global.main_grid[# _gx, _gy + 1];
+			var _bottom_info = ds_map_find_value(global.tile_definitions, _bottom);
+		    var _left   = global.main_grid[# _gx - 1, _gy];
+			var _left_info = ds_map_find_value(global.tile_definitions, _left);
+		    var _right  = global.main_grid[# _gx + 1, _gy];
+			var _right_info = ds_map_find_value(global.tile_definitions, _right);
+			
+			draw_floor(_px, _py, 0, tile_info.sprite1, tint_color);
+			draw_floor(_px, _py, tile_tall, tile_info.sprite2, tint_color);
+
+		    if (_left_info.is_wall && _right_info.is_wall) {
+		        draw_pane(_px, _py, 0, tile_info.sprite, tint_color);
+		    }
+		    else if (_top_info.is_wall && _bottom_info.is_wall) {
+		        draw_pane(_px, _py, 90, tile_info.sprite, tint_color);
+		    };
 	    default:
 	        break;
 	}
 }
 
 function get_tint_from_distance(dist) {
-    var t = clamp(dist / (max_depth-1), 0, 1);
+    var t = clamp(dist / (max_depth-2.75), 0, 1);
     var brightness = 1.0 - t;
     var cval = floor(brightness * 255);
     return make_color_rgb(cval, cval, cval);
@@ -110,26 +132,15 @@ function draw_topdown_dungeon_debug(__x, __y) {
     for (var gy = 0; gy < grid_h; gy++) {
         for (var gx = 0; gx < grid_w; gx++) {
             var cell_type = global.main_grid[# gx, gy];
-            if (cell_type == "void") {
+            if (cell_type == "void") or (cell_type == "wall") {
                 continue; // skip void cells
             }
 
             var x1 = offset_x + gx * tile_size;
             var y1 = offset_y + gy * tile_size;
-
             switch (cell_type) {
-                case "floor1":
-                    draw_set_color(c_dkgray);
-                    break;
-                case "wall1":
-                    draw_set_color(c_ltgray);
-                    break;
-                case "door1":
-                    draw_set_color(c_blue);
-                    break;
-                default:
-                    draw_set_color(c_yellow);
-                    break;
+                //case "door":  draw_set_color(c_grey);   break;
+                default:       draw_set_color(c_white); break;
             }
 			draw_point(x1+1, y1+1);
         }
@@ -180,22 +191,18 @@ function draw_topdown_dungeon_radar(__x, __y, _width) {
             if (dist > _width) continue;
 
             var cell_type = global.main_grid[# gx, gy];
-            if (cell_type == "void") continue;
+            if (cell_type == "void") or (cell_type == "wall") {
+                continue; // skip void cells
+            }
+			draw_set_color(c_white)
 
             var x1 = center_x + dx * tile_size;
             var y1 = center_y + dy * tile_size;
-
-            // Set color based on cell type
-            switch (cell_type) {
-                case "floor1": draw_set_color(c_dkgray); break;
-                case "wall1":  draw_set_color(c_ltgray); break;
-                case "door1":  draw_set_color(c_blue);   break;
-                default:       draw_set_color(c_yellow); break;
-            }
-
+			
             // Set alpha falloff
             var alpha = 1.0 - (dist / _width);
-            draw_set_alpha(alpha);
+            //draw_set_alpha(alpha);
+			draw_set_alpha(1);
             draw_point(x1 + 1, y1 + 1);
         }
     }
