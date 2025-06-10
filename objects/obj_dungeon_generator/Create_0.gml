@@ -101,10 +101,9 @@ for (var i = 0; i < ds_list_size(dungeon_rooms); i++) {
 global.spawn_x = 0
 global.spawn_y = 0
 
-var last_room_center = get_room_center(dungeon_rooms, last_room);
 if (last_room != undefined) {
-    var _x_center = ds_map_find_value(last_room, "_x");
-    var _y_center = ds_map_find_value(last_room, "_y");
+    var _x_center = last_room.x;
+    var _y_center = last_room.y;
 
     show_debug_message("Center of room: (" + string(_x_center) + ", " + string(_y_center) + ")");
     global.spawn_x = _x_center - global.MAP_OFFSET_X;

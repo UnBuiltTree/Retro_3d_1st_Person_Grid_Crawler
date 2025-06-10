@@ -137,7 +137,7 @@ function connect_rooms(grid_, room_list, room_id1, room_id2) {
     create_connection(grid_, _x1, _y1, _x2, _y2, _w1, _h1, _w2, _h2);
 }
 */
-
+/*
 function get_room_center(room_list, room_id) {
     var _room = ds_list_find_value(room_list, room_id);
     if (_room == undefined) {
@@ -149,7 +149,7 @@ function get_room_center(room_list, room_id) {
     var _y = ds_map_find_value(_room, "_y");
     return [_x, _y];
 }
-
+*/
 /*
 function create_room(grid_, room_list, room_id, x_center, y_center, room_w, room_h) {
     var room_ = ds_map_create();
