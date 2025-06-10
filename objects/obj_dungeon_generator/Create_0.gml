@@ -1,10 +1,15 @@
+function create_tile(name_str, properties) {
+    var const_name = "TILE_" + string_upper(name_str);
+    variable_global_set(const_name, name_str);
 
-global.TILE_VOID  = "void";
-global.TILE_WALL  = "wall1";
-global.TILE_ROOM  = "floor1";
-global.TILE_DOOR  = "door1";
-global.TILE_AREA  = "area";
-global.TILE_GLASS  = "glass";
+    // Initialize global.tile_definitions if it doesn't exist
+    if (!variable_global_exists("tile_definitions") || !ds_exists(global.tile_definitions, ds_type_map)) {
+        global.tile_definitions = ds_map_create();
+    }
+
+    // Add to tile definitions map
+    ds_map_set(global.tile_definitions, name_str, properties);
+}
 
 #region Anti memory leak
 // Destroy global.main_grid
@@ -28,47 +33,46 @@ if !(variable_global_exists("tile_definitions") || !ds_exists(global.tile_defini
 	 is_transparent - tiles that have transparent sprites
 	 is_walkable	- can the player walk on this tile?
 */
-var room_map = {
-	sprite : spr_floor,
-	sprite1 : spr_ceil,
-	is_wall : false,
-	is_transparent : false,
-	is_walkable : true
-}
-var wall_map = {
-	sprite : spr_wall,
-	is_wall : true,
-	is_transparent : false,
-	is_walkable : false
-}
-var door_map = {
-	sprite : spr_door_open,
-	sprite1 : spr_ceil,
-	sprite2 : spr_floor,
-	is_wall : false,
-	is_transparent : true,
-	is_walkable : true
-}
-var glass_map = {
-	sprite : spr_glass,
-	sprite1 : spr_ceil,
-	sprite2 : spr_floor,
-	is_wall : true,
-	is_transparent : true,
-	is_walkable : false
-}
-var void_map = {
-	sprite : -1,
-	is_wall : true,
-	is_transparent : true,
-	is_walkable : true //debug reasons
-}
+create_tile("room", {
+    sprite: spr_floor,
+    sprite1: spr_ceil,
+    is_wall: false,
+    is_transparent: false,
+    is_walkable: true
+});
 
-ds_map_set(global.tile_definitions, global.TILE_ROOM, room_map);
-ds_map_set(global.tile_definitions, global.TILE_WALL, wall_map);
-ds_map_set(global.tile_definitions, global.TILE_DOOR, door_map);
-ds_map_set(global.tile_definitions, global.TILE_VOID, void_map);
-ds_map_set(global.tile_definitions, global.TILE_GLASS,glass_map);
+create_tile("wall", {
+    sprite: spr_wall,
+    is_wall: true,
+    is_transparent: false,
+    is_walkable: false
+});
+
+create_tile("door", {
+    sprite: spr_door_1,
+    sprite1: spr_ceil,
+    sprite2: spr_floor,
+    is_wall: false,
+    is_transparent: true,
+    is_walkable: true
+});
+
+create_tile("glass", {
+    sprite: spr_glass,
+    sprite1: spr_ceil,
+    sprite2: spr_floor,
+    is_wall: true,
+    is_transparent: true,
+    is_walkable: false
+});
+
+create_tile("void", {
+    sprite: -1,
+    is_wall: true,
+    is_transparent: true,
+    is_walkable: true  // debug
+});
+
 
 var grid_size = 64;
 global.main_grid = ds_grid_create(grid_size, grid_size);
@@ -99,23 +103,25 @@ create_room(
     spawn_room_width,	// width
     spawn_room_height	// height
 );
-render_room(
+render_room_blob(
     global.main_grid,
     ds_list_find_value(dungeon_rooms, 0)
 );
 
 var pending_connections = ds_list_create();
 
+var last_index = 0;
+
 //generate dungeon rooms
-for (var i = 1; i < 32; ++i) {
-    var _room_width  = irandom_range(round(4 + (i / 8)), round(4 + (i / 4)));
+for (var i = 1; i < 42; ++i) {
+    var _room_width  = irandom_range(round(3 + (i / 8)), round(7 + (i / 4)));
     if (_room_width mod 2 == 0) _room_width++;
 
-    var _room_height = irandom_range(round(4 + (i / 8)), round(4 + (i / 4)));
+    var _room_height = irandom_range(round(3 + (i / 8)), round(7 + (i / 4)));
     if (_room_height mod 2 == 0) _room_height++;
 
-    var closeness = irandom_range(2, 4);
-	var choas = 2;
+    var closeness = irandom_range(1, round(1 + (i / 4)));
+	var choas = 12
 
     var place = find_room_place(
         global.main_grid,
@@ -141,11 +147,19 @@ for (var i = 1; i < 32; ++i) {
     );
 
     var new_index = ds_list_size(dungeon_rooms) - 1;
-
-    render_room(
+	var _blob = choose(0,1)
+	if _blob {
+    render_room_blob(
         global.main_grid,
         ds_list_find_value(dungeon_rooms, new_index)
     );
+	} else {
+		render_room(
+        global.main_grid,
+        ds_list_find_value(dungeon_rooms, new_index)
+		);
+		last_room = ds_list_find_value(dungeon_rooms, ds_list_size(dungeon_rooms) - 1);
+	}
 
     var nearest = closest_room(dungeon_rooms, new_index);
     if (nearest != undefined) {
@@ -170,19 +184,25 @@ for (var j = 0; j < _pc_count; j++) {
 }
 ds_list_destroy(pending_connections);
 
+
 for (var i = 0; i < ds_list_size(dungeon_rooms); i++) {
     var _room = ds_list_find_value(dungeon_rooms, i);
 
     place_doors(global.main_grid, _room);
 }
 
-ds_grid_set(global.main_grid, -2+global.MAP_OFFSET_X, 1+global.MAP_OFFSET_Y, global.TILE_WALL);
-ds_grid_set(global.main_grid, -1+global.MAP_OFFSET_X, 1+global.MAP_OFFSET_Y, global.TILE_GLASS);
-ds_grid_set(global.main_grid, 0+global.MAP_OFFSET_X, 1+global.MAP_OFFSET_Y, global.TILE_GLASS);
-ds_grid_set(global.main_grid, 1+global.MAP_OFFSET_X, 1+global.MAP_OFFSET_Y, global.TILE_GLASS);
-ds_grid_set(global.main_grid, 2+global.MAP_OFFSET_X, 1+global.MAP_OFFSET_Y, global.TILE_WALL);
 
-global.spawn_x = 0;
-global.spawn_y = 0;
+global.spawn_x = 0
+global.spawn_y = 0
+
+var last_room_center = get_room_center(dungeon_rooms, last_room);
+if (last_room != undefined) {
+    var _x_center = ds_map_find_value(last_room, "_x");
+    var _y_center = ds_map_find_value(last_room, "_y");
+
+    show_debug_message("Center of room: (" + string(_x_center) + ", " + string(_y_center) + ")");
+    global.spawn_x = _x_center - global.MAP_OFFSET_X;
+    global.spawn_y = _y_center - global.MAP_OFFSET_Y;
+}
 
 instance_destroy();

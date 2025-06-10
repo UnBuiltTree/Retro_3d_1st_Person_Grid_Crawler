@@ -98,37 +98,49 @@ function draw_wall(_x, _y, _spr, _col) {
     var h = tile_tall;
 
     var vb = vertex_create_buffer();
-    vertex_begin(vb, global.vf_quad);
+    vertex_begin(vb, global.vf_quad);  // Assume vf_quad includes position, color, texcoord
 
-    // FRONT
+    // === FRONT face ===
     vertex_position_3d(vb, 0, 0, 0); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u0, v0);
+    vertex_position_3d(vb, w, 0, 0); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u1, v0);
     vertex_position_3d(vb, 0, 0, h); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u0, v1);
+
     vertex_position_3d(vb, w, 0, 0); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u1, v0);
     vertex_position_3d(vb, w, 0, h); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u1, v1);
+    vertex_position_3d(vb, 0, 0, h); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u0, v1);
 
-    // BACK
+    // === BACK face ===
     vertex_position_3d(vb, w, d, 0); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u0, v0);
     vertex_position_3d(vb, 0, d, 0); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u1, v0);
     vertex_position_3d(vb, w, d, h); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u0, v1);
-    vertex_position_3d(vb, 0, d, h); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u1, v1);
 
-    // LEFT
+    vertex_position_3d(vb, 0, d, 0); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u1, v0);
+    vertex_position_3d(vb, 0, d, h); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u1, v1);
+    vertex_position_3d(vb, w, d, h); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u0, v1);
+
+    // === LEFT face ===
     vertex_position_3d(vb, 0, d, 0); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u1, v0);
     vertex_position_3d(vb, 0, 0, 0); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u0, v0);
     vertex_position_3d(vb, 0, d, h); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u1, v1);
-    vertex_position_3d(vb, 0, 0, h); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u0, v1);
 
-    // RIGHT
+    vertex_position_3d(vb, 0, 0, 0); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u0, v0);
+    vertex_position_3d(vb, 0, 0, h); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u0, v1);
+    vertex_position_3d(vb, 0, d, h); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u1, v1);
+
+    // === RIGHT face ===
     vertex_position_3d(vb, w, 0, 0); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u0, v0);
     vertex_position_3d(vb, w, d, 0); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u1, v0);
     vertex_position_3d(vb, w, 0, h); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u0, v1);
+
+    vertex_position_3d(vb, w, d, 0); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u1, v0);
     vertex_position_3d(vb, w, d, h); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u1, v1);
+    vertex_position_3d(vb, w, 0, h); vertex_colour(vb, _col, 1); vertex_texcoord(vb, u0, v1);
 
     vertex_end(vb);
 
     var mat = matrix_build(_x, _y, 0, 0, 0, 0, 1, 1, 1);
     matrix_set(matrix_world, mat);
-    vertex_submit(vb, pr_trianglestrip, tex);
+    vertex_submit(vb, pr_trianglelist, tex);
     matrix_set(matrix_world, matrix_build_identity());
 
     vertex_delete_buffer(vb);
@@ -159,6 +171,52 @@ function draw_floor(_x, _y, _z, _spr, _col) {
 function draw_pane(_x, _y, _ang, _spr, _col) {
     var tex = sprite_get_texture(_spr, 0);
     var uv  = sprite_get_uvs(_spr, 0);
+    var u0 = uv[0], v0 = uv[1], u1 = uv[2], v1 = uv[3];
+
+    var w = tile_width;
+    var h = tile_tall;
+
+    var dx = dcos(_ang);
+    var dy = -dsin(_ang);
+    var half = w * 0.5;
+
+    var x1 = _x + half + dx * half;
+    var y1 = _y + half + dy * half;
+
+    var x2 = _x + half - dx * half;
+    var y2 = _y + half - dy * half;
+
+    var vb = vertex_create_buffer();
+    vertex_begin(vb, global.vf_quad);
+
+    // Bottom-left
+    vertex_position_3d(vb, x1, y1, 0);
+    vertex_colour(vb, _col, 1);
+    vertex_texcoord(vb, u0, v0);
+
+    // Top-left
+    vertex_position_3d(vb, x1, y1, h);
+    vertex_colour(vb, _col, 1);
+    vertex_texcoord(vb, u0, v1);
+
+    // Bottom-right
+    vertex_position_3d(vb, x2, y2, 0);
+    vertex_colour(vb, _col, 1);
+    vertex_texcoord(vb, u1, v0);
+
+    // Top-right
+    vertex_position_3d(vb, x2, y2, h);
+    vertex_colour(vb, _col, 1);
+    vertex_texcoord(vb, u1, v1);
+
+    vertex_end(vb);
+    vertex_submit(vb, pr_trianglestrip, tex);
+    vertex_delete_buffer(vb);
+}
+
+function draw_animated_pane(_x, _y, _ang, _spr, _frame, _col) {
+    var tex = sprite_get_texture(_spr,  _frame);
+    var uv  = sprite_get_uvs(_spr, _frame);
     var u0 = uv[0], v0 = uv[1], u1 = uv[2], v1 = uv[3];
 
     var w = tile_width;

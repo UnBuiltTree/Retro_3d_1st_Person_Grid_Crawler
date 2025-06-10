@@ -44,6 +44,7 @@
     {"id":{"name":"scrpt_render","path":"scripts/scrpt_render/scrpt_render.yy",},},
     {"id":{"name":"scrpt_util","path":"scripts/scrpt_util/scrpt_util.yy",},},
     {"id":{"name":"spr_ceil","path":"sprites/spr_ceil/spr_ceil.yy",},},
+    {"id":{"name":"spr_door_1","path":"sprites/spr_door_1/spr_door_1.yy",},},
     {"id":{"name":"spr_door_closed","path":"sprites/spr_door_closed/spr_door_closed.yy",},},
     {"id":{"name":"spr_door_open","path":"sprites/spr_door_open/spr_door_open.yy",},},
     {"id":{"name":"spr_floor","path":"sprites/spr_floor/spr_floor.yy",},},

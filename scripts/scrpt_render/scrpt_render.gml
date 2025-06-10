@@ -114,7 +114,7 @@ function draw_cell(_gx, _gy, _offset_x, _offset_y, _tile_w, _tile_t, dist) {
 }
 
 function get_tint_from_distance(dist) {
-    var t = clamp(dist / (max_depth-1), 0, 1);
+    var t = clamp(dist / (max_depth-2.75), 0, 1);
     var brightness = 1.0 - t;
     var cval = floor(brightness * 255);
     return make_color_rgb(cval, cval, cval);
@@ -132,26 +132,15 @@ function draw_topdown_dungeon_debug(__x, __y) {
     for (var gy = 0; gy < grid_h; gy++) {
         for (var gx = 0; gx < grid_w; gx++) {
             var cell_type = global.main_grid[# gx, gy];
-            if (cell_type == "void") {
+            if (cell_type == "void") or (cell_type == "wall") {
                 continue; // skip void cells
             }
 
             var x1 = offset_x + gx * tile_size;
             var y1 = offset_y + gy * tile_size;
-
             switch (cell_type) {
-                case "floor1":
-                    draw_set_color(c_dkgray);
-                    break;
-                case "wall1":
-                    draw_set_color(c_ltgray);
-                    break;
-                case "door1":
-                    draw_set_color(c_blue);
-                    break;
-                default:
-                    draw_set_color(c_yellow);
-                    break;
+                //case "door":  draw_set_color(c_grey);   break;
+                default:       draw_set_color(c_white); break;
             }
 			draw_point(x1+1, y1+1);
         }
@@ -202,22 +191,18 @@ function draw_topdown_dungeon_radar(__x, __y, _width) {
             if (dist > _width) continue;
 
             var cell_type = global.main_grid[# gx, gy];
-            if (cell_type == "void") continue;
+            if (cell_type == "void") or (cell_type == "wall") {
+                continue; // skip void cells
+            }
+			draw_set_color(c_white)
 
             var x1 = center_x + dx * tile_size;
             var y1 = center_y + dy * tile_size;
-
-            // Set color based on cell type
-            switch (cell_type) {
-                case "floor1": draw_set_color(c_dkgray); break;
-                case "wall1":  draw_set_color(c_ltgray); break;
-                case "door1":  draw_set_color(c_blue);   break;
-                default:       draw_set_color(c_yellow); break;
-            }
-
+			
             // Set alpha falloff
             var alpha = 1.0 - (dist / _width);
-            draw_set_alpha(alpha);
+            //draw_set_alpha(alpha);
+			draw_set_alpha(1);
             draw_point(x1 + 1, y1 + 1);
         }
     }
