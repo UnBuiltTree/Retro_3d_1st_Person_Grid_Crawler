@@ -1,7 +1,3 @@
-if (!variable_global_exists("tile_definitions") || !ds_exists(global.tile_definitions, ds_type_map)) {
-    global.tile_definitions = ds_map_create();
-}
-
 draw_pattern = [];
 
 global.frame = 0;
@@ -9,7 +5,7 @@ frame_timer = 0;
 frame_speed = game_get_speed(gamespeed_fps) div 8; // 8 frames per second
 
 // 360 × 240 UI buffer
-ui_surf = surface_create(360, 240);
+ui_surf = surface_create(display_width, display_height);
 if (surface_exists(ui_surf)) {
     var ui_tex = surface_get_texture(ui_surf);
 }
@@ -18,11 +14,6 @@ instance_create_layer(0, 0, "Instances", obj_dungeon_generator);
 
 tile_width = 64;
 tile_tall  = 48;
-grid_w     = ds_grid_width(global.main_grid);
-grid_h     = ds_grid_height(global.main_grid);
-
-global.vf_wall = vertex_format_position_3d_color_texture();
-global.vf_quad = vertex_format_position_3d_color_texture();
 
 offset_x = -global.MAP_OFFSET_X;
 offset_y = -global.MAP_OFFSET_Y;
