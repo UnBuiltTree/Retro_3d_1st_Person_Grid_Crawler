@@ -53,24 +53,19 @@ function draw_cell(_gx, _gy, _offset_x, _offset_y, _tile_w, _tile_t, dist) {
 		gpu_set_zwriteenable(true);
 	}
 	var tint_color = get_tint_from_distance(dist);
-
+	var _px = (_gx + _offset_x) * _tile_w
+	var _py = (_gy + _offset_y) * _tile_w
 	switch (tile_key) {
 	    case global.TILE_WALL:
-	        var _px = (_gx + _offset_x) * _tile_w;
-	        var _py = (_gy + _offset_y) * _tile_w;
 	        draw_wall(_px, _py, tile_info.sprite, tint_color);
 	        break;
 		
 		case global.TILE_ROOM:
-	        var _px = (_gx + _offset_x) * _tile_w;
-	        var _py = (_gy + _offset_y) * _tile_w;
 			draw_floor(_px, _py, 0, tile_info.sprite1, tint_color);
 			draw_floor(_px, _py, tile_tall, tile_info.sprite, tint_color);
 			break;
 		case global.TILE_DOOR:
-		    var _px = (_gx + _offset_x) * _tile_w;
-		    var _py = (_gy + _offset_y) * _tile_w;
-
+			var rooms = adjacent_rooms(_gx, _gy)
 		    var _top    = global.main_grid[# _gx, _gy - 1];
 		    var _bottom = global.main_grid[# _gx, _gy + 1];
 		    var _left   = global.main_grid[# _gx - 1, _gy];
@@ -79,16 +74,14 @@ function draw_cell(_gx, _gy, _offset_x, _offset_y, _tile_w, _tile_t, dist) {
 			draw_floor(_px, _py, 0, tile_info.sprite1, tint_color);
 			draw_floor(_px, _py, tile_tall, tile_info.sprite2, tint_color);
 
-		    if (_left == global.TILE_WALL && _right == global.TILE_WALL) {
+		    if (rooms.left == global.TILE_WALL && rooms.right == global.TILE_WALL) {
 		        draw_pane(_px, _py, 0, tile_info.sprite, tint_color);
 		    }
-		    else if (_top == global.TILE_WALL && _bottom == global.TILE_WALL) {
+		    else if (rooms.top == global.TILE_WALL && rooms.bottom == global.TILE_WALL) {
 		        draw_pane(_px, _py, 90, tile_info.sprite, tint_color);
 		    }
 			break;
 		case global.TILE_GLASS:
-		    var _px = (_gx + _offset_x) * _tile_w;
-		    var _py = (_gy + _offset_y) * _tile_w;
 
 		    var _top    = global.main_grid[# _gx, _gy - 1];
 			var _top_info = ds_map_find_value(global.tile_definitions, _top);
