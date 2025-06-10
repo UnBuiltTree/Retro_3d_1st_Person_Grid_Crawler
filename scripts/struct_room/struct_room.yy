@@ -1,12 +1,12 @@
 {
   "$GMScript":"v1",
-  "%Name":"scrpt_dungeon_gen",
+  "%Name":"struct_room",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"scrpt_dungeon_gen",
+  "name":"struct_room",
   "parent":{
-    "name":"Scripts",
-    "path":"folders/Scripts.yy",
+    "name":"Objects",
+    "path":"folders/Objects.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

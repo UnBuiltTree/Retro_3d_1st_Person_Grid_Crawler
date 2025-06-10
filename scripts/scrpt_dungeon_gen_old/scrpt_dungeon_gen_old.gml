@@ -1,3 +1,4 @@
+/*
 function create_connection(grid_, _x1, _y1, _x2, _y2, _w1 = 1, _h1 = 1, _w2 = 1, _h2 = 1) {
     var grid_w = ds_grid_width(grid_)
     var grid_h = ds_grid_height(grid_)
@@ -88,9 +89,9 @@ function create_connection(grid_, _x1, _y1, _x2, _y2, _w1 = 1, _h1 = 1, _w2 = 1,
             carve_tile(grid_, _x2, _y);
         }
     }
-}
+}*/
 
-
+/*
 function carve_tile(grid_, _x, _y) {
     var grid_w = ds_grid_width(grid_)
     var grid_h = ds_grid_height(grid_)
@@ -112,7 +113,8 @@ function carve_tile(grid_, _x, _y) {
         }
     }
 }
-
+*/
+/*
 function connect_rooms(grid_, room_list, room_id1, room_id2) {
     var room1 = ds_list_find_value(room_list, room_id1);
     var room2 = ds_list_find_value(room_list, room_id2);
@@ -134,8 +136,8 @@ function connect_rooms(grid_, room_list, room_id1, room_id2) {
 
     create_connection(grid_, _x1, _y1, _x2, _y2, _w1, _h1, _w2, _h2);
 }
-
-
+*/
+/*
 function get_room_center(room_list, room_id) {
     var _room = ds_list_find_value(room_list, room_id);
     if (_room == undefined) {
@@ -147,7 +149,8 @@ function get_room_center(room_list, room_id) {
     var _y = ds_map_find_value(_room, "_y");
     return [_x, _y];
 }
-
+*/
+/*
 function create_room(grid_, room_list, room_id, x_center, y_center, room_w, room_h) {
     var room_ = ds_map_create();
     ds_map_add(room_, "id", room_id);
@@ -158,7 +161,8 @@ function create_room(grid_, room_list, room_id, x_center, y_center, room_w, room
     ds_map_add(room_, "connected_rooms", ds_list_create());
     ds_list_add(room_list, room_);
 }
-
+*/
+/*
 function render_room(grid_, _room_map) {
     var _x_center = ds_map_find_value(_room_map, "_x");
     var _y_center = ds_map_find_value(_room_map, "_y");
@@ -168,8 +172,8 @@ function render_room(grid_, _room_map) {
     var _x_start = _x_center - floor(width/2);
     var _y_start = _y_center - floor(height/2);
 
-    var grid_w = grid_size
-    var grid_h = grid_size
+    var grid_w = ds_grid_width(grid_)
+    var grid_h = ds_grid_height(grid_)
 
     for (var yy = 0; yy < height; yy++) {
         for (var xx = 0; xx < width; xx++) {
@@ -196,8 +200,8 @@ function render_room_blob(grid_, _room_map) {
     var _w        = ds_map_find_value(_room_map, "width")+1;
     var _h        = ds_map_find_value(_room_map, "height")+1;
 
-    var grid_w = grid_size
-    var grid_h = grid_size
+    var grid_w = ds_grid_width(grid_)
+    var grid_h = ds_grid_height(grid_)
 
     var _x0 = _x_center - floor(_w / 2);
     var _y0 = _y_center - floor(_h / 2);
@@ -263,7 +267,8 @@ function render_room_blob(grid_, _room_map) {
 
     ds_grid_destroy(_blob);
 }
-
+*/
+/*
 function find_room_place(grid_, room_list, new_w, new_h, closeness, choas) {
     var grid_w = ds_grid_width(grid_);
     var grid_h = ds_grid_height(grid_);
@@ -347,9 +352,9 @@ function find_room_place(grid_, room_list, new_w, new_h, closeness, choas) {
 
     return undefined;
 }
+*/
 
-
-
+/*
 function closest_room(room_list, room_id) {
     var nRooms = ds_list_size(room_list);
     if (nRooms < 2) return undefined; // No other room to compare
@@ -381,8 +386,8 @@ function closest_room(room_list, room_id) {
 
     return closest_id;
 }
-
-
+*/
+/*
 function place_doors(grid_, room_) {
     var grid_w = ds_grid_width(grid_);
     var grid_h = ds_grid_height(grid_);
@@ -421,7 +426,7 @@ function place_doors(grid_, room_) {
         }
     }
 }
-
+*/
 
 
 

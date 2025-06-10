@@ -1,7 +1,8 @@
-// Reset main grid
-if !(variable_global_exists("main_grid")) {
-	global.main_grid = ds_grid_create(grid_size, grid_size)
+if(instance_number(obj_dungeon_generator) > 1){
+	throw("obj_dungeon_generator is a singleton!")
 }
+
+// Reset main grid
 ds_grid_clear(global.main_grid, global.TILE_VOID)
 
 // spawn room parameters
@@ -12,16 +13,9 @@ var spawn_room_y = global.MAP_OFFSET_Y;
 
 dungeon_rooms = ds_list_create();
 
-// Create the spawn room
-create_room(
-    global.main_grid,
-    dungeon_rooms,
-    0,					// room_id
-    spawn_room_x,		// x_center
-    spawn_room_y,		// y_center
-    spawn_room_width,	// width
-    spawn_room_height	// height
-);
+var spawn_room = new struct_room(0, spawn_room_x, spawn_room_y, spawn_room_width, spawn_room_height)
+ds_list_add(dungeon_rooms, spawn_room);
+
 render_room_blob(
     global.main_grid,
     ds_list_find_value(dungeon_rooms, 0)
@@ -42,7 +36,7 @@ for (var i = 1; i < 42; ++i) {
     var closeness = irandom_range(1, round(1 + (i / 4)));
 	var choas = 12
 
-    var place = find_room_place(
+    var new_room = find_room_place(
         global.main_grid,
         dungeon_rooms,
         _room_width,
@@ -50,22 +44,14 @@ for (var i = 1; i < 42; ++i) {
         closeness,
 		choas
     );
-    if (place == undefined) {
+    if (new_room == undefined) {
         show_debug_message("Could not place room " + string(i));
         continue;
     }
+	var new_index = ds_list_size(dungeon_rooms) - 1
+	new_room[$ "id"] = new_index
+	ds_list_add(dungeon_rooms, new_room);
 
-    create_room(
-        global.main_grid,
-        dungeon_rooms,
-        i,			// room_id = i
-        place[0],	// x_center
-        place[1],	// y_center
-        _room_width,
-        _room_height
-    );
-
-    var new_index = ds_list_size(dungeon_rooms) - 1;
 	var _blob = choose(0,1)
 	if _blob {
     render_room_blob(
@@ -77,10 +63,11 @@ for (var i = 1; i < 42; ++i) {
         global.main_grid,
         ds_list_find_value(dungeon_rooms, new_index)
 		);
-		last_room = ds_list_find_value(dungeon_rooms, ds_list_size(dungeon_rooms) - 1);
+		last_room = ds_list_find_value(dungeon_rooms, ds_list_size(dungeon_rooms) - 1); // Does size change?
 	}
 
-    var nearest = closest_room(dungeon_rooms, new_index);
+   // var nearest = closest_room(dungeon_rooms, new_index);
+   var nearest = new_room.closest_room(dungeon_rooms)
     if (nearest != undefined) {
         // Store the connection [from_index, to_index]
         var conn = [ new_index, nearest ];
@@ -114,10 +101,9 @@ for (var i = 0; i < ds_list_size(dungeon_rooms); i++) {
 global.spawn_x = 0
 global.spawn_y = 0
 
-var last_room_center = get_room_center(dungeon_rooms, last_room);
 if (last_room != undefined) {
-    var _x_center = ds_map_find_value(last_room, "_x");
-    var _y_center = ds_map_find_value(last_room, "_y");
+    var _x_center = last_room.x;
+    var _y_center = last_room.y;
 
     show_debug_message("Center of room: (" + string(_x_center) + ", " + string(_y_center) + ")");
     global.spawn_x = _x_center - global.MAP_OFFSET_X;
