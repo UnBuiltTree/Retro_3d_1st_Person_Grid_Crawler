@@ -61,8 +61,8 @@ if (moving) {
             var gx = try_x + global.MAP_OFFSET_X;
             var gy = try_y + global.MAP_OFFSET_Y;
 
-            if (gx >= 0 && gx < ds_grid_width(global.main_grid)
-             && gy >= 0 && gy < ds_grid_height(global.main_grid)) 
+            if (gx >= 0 && gx < grid_size
+             && gy >= 0 && gy < grid_size) 
             {
                 var tile_key = global.main_grid[# gx, gy];
                 var tile_info = ds_map_find_value(global.tile_definitions, tile_key);

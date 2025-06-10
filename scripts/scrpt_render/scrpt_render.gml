@@ -1,6 +1,6 @@
 function draw_dungeon() {
-    var grid_w = ds_grid_width(global.main_grid);
-    var grid_h = ds_grid_height(global.main_grid);
+    var grid_w = grid_size
+    var grid_h = grid_size
 
     var px = floor(player_real_x + global.MAP_OFFSET_X);
     var py = floor(player_real_y + global.MAP_OFFSET_Y);
@@ -65,32 +65,26 @@ function draw_cell(_gx, _gy, _offset_x, _offset_y, _tile_w, _tile_t, dist) {
 			draw_floor(_px, _py, tile_tall, tile_info.sprite, tint_color);
 			break;
 		case global.TILE_DOOR:
-			var rooms = adjacent_rooms(_gx, _gy)
-		    var _top    = global.main_grid[# _gx, _gy - 1];
-		    var _bottom = global.main_grid[# _gx, _gy + 1];
-		    var _left   = global.main_grid[# _gx - 1, _gy];
-		    var _right  = global.main_grid[# _gx + 1, _gy];
+			var tiles_door = adjacent_tiles(_gx, _gy)
 			
 			draw_floor(_px, _py, 0, tile_info.sprite1, tint_color);
 			draw_floor(_px, _py, tile_tall, tile_info.sprite2, tint_color);
 
-		    if (rooms.left == global.TILE_WALL && rooms.right == global.TILE_WALL) {
+		    if (tiles_door.left == global.TILE_WALL && tiles_door.right == global.TILE_WALL) {
 		        draw_pane(_px, _py, 0, tile_info.sprite, tint_color);
 		    }
-		    else if (rooms.top == global.TILE_WALL && rooms.bottom == global.TILE_WALL) {
+		    else if (tiles_door.top == global.TILE_WALL && tiles_door.bottom == global.TILE_WALL) {
 		        draw_pane(_px, _py, 90, tile_info.sprite, tint_color);
-		    }
-			break;
+		    } else {
+				// Handle: No proper connection
+			}
+			break
 		case global.TILE_GLASS:
-
-		    var _top    = global.main_grid[# _gx, _gy - 1];
-			var _top_info = ds_map_find_value(global.tile_definitions, _top);
-		    var _bottom = global.main_grid[# _gx, _gy + 1];
-			var _bottom_info = ds_map_find_value(global.tile_definitions, _bottom);
-		    var _left   = global.main_grid[# _gx - 1, _gy];
-			var _left_info = ds_map_find_value(global.tile_definitions, _left);
-		    var _right  = global.main_grid[# _gx + 1, _gy];
-			var _right_info = ds_map_find_value(global.tile_definitions, _right);
+			var tiles = adjacent_tiles(_gx, _gy)
+			var _top_info = ds_map_find_value(global.tile_definitions, tiles.top);
+			var _bottom_info = ds_map_find_value(global.tile_definitions, tiles.bottom);
+			var _left_info = ds_map_find_value(global.tile_definitions, tiles.left);
+			var _right_info = ds_map_find_value(global.tile_definitions, tiles.right);
 			
 			draw_floor(_px, _py, 0, tile_info.sprite1, tint_color);
 			draw_floor(_px, _py, tile_tall, tile_info.sprite2, tint_color);
@@ -100,7 +94,9 @@ function draw_cell(_gx, _gy, _offset_x, _offset_y, _tile_w, _tile_t, dist) {
 		    }
 		    else if (_top_info.is_wall && _bottom_info.is_wall) {
 		        draw_pane(_px, _py, 90, tile_info.sprite, tint_color);
-		    };
+		    } else {
+				// Handle: No proper connection possible
+			}
 	    default:
 	        break;
 	}
@@ -166,8 +162,8 @@ function draw_topdown_dungeon_radar(__x, __y, _width) {
     var _offset_x  = __x;
     var _offset_y  = __y;
 
-    var grid_w = ds_grid_width(global.main_grid);
-    var grid_h = ds_grid_height(global.main_grid);
+    var grid_w = grid_size
+    var grid_h = grid_size
 
     var player_gx = player_x + global.MAP_OFFSET_X;
     var player_gy = player_y + global.MAP_OFFSET_Y;

@@ -1,6 +1,6 @@
 function create_connection(grid_, _x1, _y1, _x2, _y2, _w1 = 1, _h1 = 1, _w2 = 1, _h2 = 1) {
-    var grid_w = ds_grid_width(grid_);
-    var grid_h = ds_grid_height(grid_);
+    var grid_w = ds_grid_width(grid_)
+    var grid_h = ds_grid_height(grid_)
 
     // Room 1 bounds
     var _left1   = _x1 - floor(_w1 / 2);
@@ -92,8 +92,8 @@ function create_connection(grid_, _x1, _y1, _x2, _y2, _w1 = 1, _h1 = 1, _w2 = 1,
 
 
 function carve_tile(grid_, _x, _y) {
-    var grid_w = ds_grid_width(grid_);
-    var grid_h = ds_grid_height(grid_);
+    var grid_w = ds_grid_width(grid_)
+    var grid_h = ds_grid_height(grid_)
 
     if (_x >= 0 && _x < grid_w && _y >= 0 && _y < grid_h) {
         grid_[# _x, _y] = global.TILE_ROOM;
@@ -168,8 +168,8 @@ function render_room(grid_, _room_map) {
     var _x_start = _x_center - floor(width/2);
     var _y_start = _y_center - floor(height/2);
 
-    var grid_w = ds_grid_width(grid_);
-    var grid_h = ds_grid_height(grid_);
+    var grid_w = grid_size
+    var grid_h = grid_size
 
     for (var yy = 0; yy < height; yy++) {
         for (var xx = 0; xx < width; xx++) {
@@ -196,8 +196,8 @@ function render_room_blob(grid_, _room_map) {
     var _w        = ds_map_find_value(_room_map, "width")+1;
     var _h        = ds_map_find_value(_room_map, "height")+1;
 
-    var grid_w = ds_grid_width(grid_);
-    var grid_h = ds_grid_height(grid_);
+    var grid_w = grid_size
+    var grid_h = grid_size
 
     var _x0 = _x_center - floor(_w / 2);
     var _y0 = _y_center - floor(_h / 2);
