@@ -118,7 +118,8 @@ function connect_rooms(grid_, room_list, room_id1, room_id2) {
         show_debug_message("Error: connect_rooms - invalid room IDs");
         return;
     }
-
+	ds_list_add(room1.connected_rooms, room2.id)
+	ds_list_add(room2.connected_rooms, room1.id)
     create_connection(grid_, room1, room2);
 }
 
