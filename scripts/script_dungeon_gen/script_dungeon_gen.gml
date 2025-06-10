@@ -129,7 +129,7 @@ function carve_tile(grid_, _x, _y) {
     }
 }
 
-function connect_rooms(grid_, room_list, room_id1, room_id2) {
+function connect_rooms(room_list, room_id1, room_id2) {
     var room1 = ds_list_find_value(room_list, room_id1);
     var room2 = ds_list_find_value(room_list, room_id2);
 
@@ -139,7 +139,6 @@ function connect_rooms(grid_, room_list, room_id1, room_id2) {
     }
 	ds_list_add(room1.connected_rooms, room2.id)
 	ds_list_add(room2.connected_rooms, room1.id)
-    create_connection(grid_, room1, room2);
 }
 
 function render_room(grid_, _room_map) {

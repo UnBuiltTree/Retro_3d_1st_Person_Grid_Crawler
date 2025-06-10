@@ -36,7 +36,7 @@ for (var i = 1; i < 42; ++i) {
     if (_room_height mod 2 == 0) _room_height++;
 
     var closeness = 3;
-	var choas = 0;
+	var choas = 10;
 
     var new_room = find_room_place(
         global.main_grid,
@@ -67,14 +67,17 @@ for (var i = 1; i < 42; ++i) {
 		last_room = ds_list_find_value(dungeon_rooms, ds_list_size(dungeon_rooms) - 1); // Does size change?
 	}
 
-   // var nearest = closest_room(dungeon_rooms, new_index);
-   var nearest = new_room.closest_room(dungeon_rooms)
-    if (nearest != undefined) {
-        // Store the connection [from_index, to_index]
-        var conn = [ new_index, nearest ];
-        ds_list_add(pending_connections, conn);
-    }
+	// var nearest = closest_room(dungeon_rooms, new_index);
+	var nearest = new_room.closest_room(dungeon_rooms)
+	if (nearest != undefined) {
+		// Store the connection [from_index, to_index]
+		var conn = [ new_index, nearest ];
+		ds_list_add(pending_connections, conn);
+	}
+	
+	
 }
+
 
 // After placement loop, carve corridors for all stored connections
 var _pc_count = ds_list_size(pending_connections);
@@ -83,11 +86,53 @@ for (var j = 0; j < _pc_count; j++) {
     var from_idx = conn[0];
     var to_idx   = conn[1];
     connect_rooms(
-        global.main_grid,
         dungeon_rooms,
         from_idx,
         to_idx
     );
+}
+
+// Extra connection for the depressed and lonely outer rooms
+ds_list_clear(pending_connections)
+var connected_list = ds_list_create()
+for(var i = 0; i < ds_list_size(dungeon_rooms); i++){
+	var room_ = ds_list_find_value(dungeon_rooms, i)
+	if(room_ != undefined and ds_list_size(room_.connected_rooms) == 1){
+		ds_list_add(connected_list, room_)
+	}
+}
+var bonus_points = ds_list_find_value(connected_list, 0)
+while(ds_list_size(connected_list) > 1){
+	var room_ = ds_list_find_value(connected_list, 0)
+	var nearest = room_.closest_room(connected_list)
+	if (nearest != undefined) {
+		// Store the connection [from_index, to_index]
+		var conn = [ room_.id, nearest ];
+		ds_list_add(pending_connections, conn);
+		ds_list_delete(connected_list, 0)
+	} else {
+		throw("MOMMY")
+	}
+}
+var room_ = ds_list_find_value(connected_list, 0)
+var conni = [ room_.id, bonus_points.id ];
+ds_list_add(pending_connections, conni);
+ds_list_delete(connected_list, 0)
+ds_list_destroy(connected_list)
+_pc_count = ds_list_size(pending_connections);
+for (var j = 0; j < _pc_count; j++) {
+    var conn = pending_connections[| j];
+    var from_idx = conn[0];
+    var to_idx   = conn[1];
+	var room1 = ds_list_find_value(dungeon_rooms, from_idx);
+    var room2 = ds_list_find_value(dungeon_rooms, to_idx);
+	if point_distance(room1.x, room1.y, room2.x, room2.y) < grid_size/1.5 {
+	    connect_rooms(
+	        dungeon_rooms,
+	        from_idx,
+	        to_idx
+	    );
+	}
 }
 ds_list_destroy(pending_connections);
 
