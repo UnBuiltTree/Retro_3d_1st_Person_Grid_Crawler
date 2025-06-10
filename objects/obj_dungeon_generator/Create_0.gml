@@ -1,4 +1,7 @@
 // Reset main grid
+if !(variable_global_exists("main_grid")) {
+	global.main_grid = ds_grid_create(grid_size, grid_size)
+}
 ds_grid_clear(global.main_grid, global.TILE_VOID)
 
 // spawn room parameters
