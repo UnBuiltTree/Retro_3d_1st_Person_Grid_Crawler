@@ -230,9 +230,9 @@ function draw_room_debug_view(room_list, offset_x, offset_y, scale) {
         var bounds = _room.get_bounds();
 
         var left   = offset_x + bounds.left   * scale;
-        var right  = offset_x + bounds.right * scale;
-        var top    = offset_y + bounds.top    * scale;
-        var bottom = offset_y + bounds.bottom * scale;
+        var right  = offset_x + bounds.right * scale+scale;
+        var top    = offset_y + bounds.top   * scale;
+        var bottom = offset_y + bounds.bottom * scale+scale;
 
         // Draw room rectangle
         draw_set_color(c_red);

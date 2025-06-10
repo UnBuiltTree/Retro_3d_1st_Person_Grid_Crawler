@@ -48,12 +48,11 @@ for (var i = 1; i < 42; ++i) {
         show_debug_message("Could not place room " + string(i));
         continue;
     }
-	var new_index = ds_list_size(dungeon_rooms) - 1
+	var new_index = ds_list_size(dungeon_rooms)
 	new_room[$ "id"] = new_index
 	ds_list_add(dungeon_rooms, new_room);
-
-	var _blob = choose(0,1)
-	if _blob {
+	var _blob = choose(0, 0)
+	if _blob == 1 {
     render_room_blob(
         global.main_grid,
         ds_list_find_value(dungeon_rooms, new_index)

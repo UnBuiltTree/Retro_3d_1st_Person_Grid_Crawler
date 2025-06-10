@@ -118,7 +118,8 @@ function connect_rooms(grid_, room_list, room_id1, room_id2) {
         show_debug_message("Error: connect_rooms - invalid room IDs");
         return;
     }
-
+	ds_list_add(room1.connected_rooms, room2.id)
+	ds_list_add(room2.connected_rooms, room1.id)
     create_connection(grid_, room1, room2);
 }
 
@@ -149,11 +150,13 @@ function render_room(grid_, _room_map) {
 function render_room_blob(grid_, _room_map) {
     var _w = _room_map.width + 1
     var _h = _room_map.height + 1
+	var new_room = new struct_room(-1, _room_map.x, _room_map.y, _w, _h)
+	var bounds = new_room.get_bounds()
+	new_room.clear()
+	delete new_room
 
     var grid_w = ds_grid_width(grid_)
     var grid_h = ds_grid_height(grid_)
-	
-	var bounds = _room_map.get_bounds()
 
     var _target_tiles = irandom_range(floor((_w * _h) * 0.6), floor((_w * _h) * 0.8));
 
