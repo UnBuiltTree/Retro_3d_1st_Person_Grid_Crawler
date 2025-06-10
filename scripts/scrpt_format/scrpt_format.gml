@@ -1,5 +1,5 @@
 function vertex_format_position_3d_color_texture() {
-    var fmt = vertex_format_begin();
+    vertex_format_begin();
     vertex_format_add_position_3d();
     vertex_format_add_colour();
     vertex_format_add_texcoord();

@@ -1,3 +1,9 @@
+
+// Free rendering surfaces
+if (surface_exists(texd_surface_current)) surface_free(texd_surface_current);
+if (surface_exists(texd_surface_from   )) surface_free(texd_surface_from);
+if (surface_exists(texd_surface_to     )) surface_free(texd_surface_to);
+
 /*
 if (variable_global_exists("tile_definitions") && ds_exists(global.tile_definitions, ds_type_map))
 {
@@ -33,16 +39,8 @@ if (variable_global_exists("tile_definitions") && ds_exists(global.tile_definiti
 }
 
 global.tile_definitions = undefined;
-*/
-
-
-// Free rendering surfaces
-if (surface_exists(texd_surface_current)) surface_free(texd_surface_current);
-if (surface_exists(texd_surface_from   )) surface_free(texd_surface_from);
-if (surface_exists(texd_surface_to     )) surface_free(texd_surface_to);
 
 // Destroy global.main_grid
-/*
 if (variable_global_exists("main_grid")) {
     if (ds_exists(global.main_grid, ds_type_grid)) {
         ds_grid_destroy(global.main_grid);

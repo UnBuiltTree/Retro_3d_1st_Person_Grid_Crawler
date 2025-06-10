@@ -7,6 +7,11 @@ function process_game_initialize() {
 	#macro display_height 240
 	#macro grid_size 64
 	
+	global.vf_wall = vertex_format_position_3d_color_texture()
+	global.vf_quad = vertex_format_position_3d_color_texture()
+	global.main_grid = ds_grid_create(grid_size, grid_size)
+	global.MAP_OFFSET_X = grid_size / 2;
+	global.MAP_OFFSET_Y = grid_size / 2;
 	global.tile_definitions = ds_map_create()
 	/* properties
 	 sprite...		- sprites used in this tile, accending numbers
@@ -49,11 +54,6 @@ function process_game_initialize() {
 	    is_transparent: false,
 	    is_walkable: true // for debug
 	})
-	global.vf_wall = vertex_format_position_3d_color_texture()
-	global.vf_quad = vertex_format_position_3d_color_texture()
-	global.main_grid = ds_grid_create(grid_size, grid_size)
-	global.MAP_OFFSET_X = grid_size / 2;
-	global.MAP_OFFSET_Y = grid_size / 2;
 	
 	global.initialized = true
 	return true
