@@ -96,6 +96,10 @@ if (keyboard_check_pressed(ord("C"))) {
     db_view_toggle = !db_view_toggle;
 }
 
+global.player_x = player_x
+global.player_y = player_y
+global.player_angle = player_angle
+
 
 // Step Event
 frame_timer++;

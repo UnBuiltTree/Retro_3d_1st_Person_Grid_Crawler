@@ -2,7 +2,7 @@ if(instance_number(obj_dungeon_generator) > 1){
 	throw("obj_dungeon_generator is a singleton!")
 }
 
-dbe_view_toggle = 1;
+dbe_view_toggle = 0;
 
 // Reset main grid
 ds_grid_clear(global.main_grid, global.TILE_VOID)
@@ -28,14 +28,16 @@ var pending_connections = ds_list_create();
 var last_index = 0;
 
 //generate dungeon rooms
-for (var i = 1; i < 42; ++i) {
+for (var i = 1; i < 128; ++i) {
     var _room_width  = irandom_range(round(3 + (i / 8)), round(7 + (i / 4)));
     if (_room_width mod 2 == 0) _room_width++;
 
     var _room_height = irandom_range(round(3 + (i / 8)), round(7 + (i / 4)));
     if (_room_height mod 2 == 0) _room_height++;
+	
+	show_debug_message(string(_room_width) + ", " + string(_room_width))
 
-    var closeness = 3;
+    var closeness = 6;
 	var choas = 10;
 
     var new_room = find_room_place(

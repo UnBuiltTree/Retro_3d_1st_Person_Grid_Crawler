@@ -8,9 +8,9 @@ draw_clear_alpha(c_black, 0);
 
 draw_set_color(c_white);
 if db_view_toggle {
-	draw_topdown_dungeon_debug(180, 0);
+	draw_topdown_dungeon_debug(room_width/2, room_height/2);
 } else {
-	draw_topdown_dungeon_radar(80, 40, 6)
+	draw_topdown_dungeon_radar(80, 40, 16)
 }
 
 if text_toggle {

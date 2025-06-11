@@ -3,5 +3,5 @@ if (keyboard_check_pressed(ord("B"))) {
 } // temp debugging
 
 if dbe_view_toggle {
-	draw_room_debug_view(dungeon_rooms, 180, 0, 2)
+	draw_room_debug_view(dungeon_rooms, room_width/2, room_height/2)
 }
