@@ -30,7 +30,10 @@ player_x		= global.spawn_x;
 player_y		= global.spawn_y;
 player_real_x	= player_x;
 player_real_y	= player_y;
+global.player_x = player_x
+global.player_y = player_y
 player_angle	= 0;
+global.player_angle = player_angle;
 max_depth		= 12;
 look_dist = (tile_width*max_depth*2)
 
@@ -56,7 +59,7 @@ move_target_x	= player_x;
 move_target_y	= player_y;
 
 text_toggle = true;
-db_view_toggle = true;
+db_view_toggle = false;
 
 function build_draw_pattern(radius) {
     for (var _layer = radius; _layer >= 1; _layer--) {
