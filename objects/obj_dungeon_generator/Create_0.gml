@@ -28,11 +28,11 @@ var pending_connections = ds_list_create();
 var last_index = 0;
 
 //generate dungeon rooms
-for (var i = 1; i < 128; ++i) {
-    var _room_width  = irandom_range(round(3 + (i / 8)), round(7 + (i / 4)));
+for (var i = 1; i < 200; ++i) {
+    var _room_width  = irandom_range(15,15);
     if (_room_width mod 2 == 0) _room_width++;
 
-    var _room_height = irandom_range(round(3 + (i / 8)), round(7 + (i / 4)));
+    var _room_height = irandom_range(15,15);
     if (_room_height mod 2 == 0) _room_height++;
 	
 	show_debug_message(string(_room_width) + ", " + string(_room_width))

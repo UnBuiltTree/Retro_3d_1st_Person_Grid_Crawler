@@ -44,102 +44,70 @@ function draw_dungeon() {
 }
 
 function draw_cell(_gx, _gy, _offset_x, _offset_y, _tile_w, _tile_t, dist) {
-	var digital_distance = 0 //max_depth/4;
 	var tile_key = global.main_grid[# _gx, _gy];
-	var tile_info = ds_map_find_value(global.tile_definitions, tile_key);
-	if (tile_info == undefined) return;
-
-	// Override sprites with spr_digital if out of range
-	var use_digital = (dist > digital_distance);
-
-	var sprite;
-	var sprite1;
-	var sprite2;
-
-	if (use_digital) {
-	    sprite  = spr_digital;
-	    sprite1 = spr_digital;
-	    sprite2 = spr_digital;
-	} else {
-	    sprite = tile_info.sprite;
-
-	    if (variable_struct_exists(tile_info, "sprite1")){
-	        sprite1 = tile_info.sprite1;
-	    } else {
-	        sprite1 = tile_info.sprite;
-	    }
-
-	    if (variable_struct_exists(tile_info, "sprite2")){
-	        sprite2 = tile_info.sprite2;
-	    } else {
-	        sprite2 = tile_info.sprite;
-	    }
-	}
-
+    var tile_info = ds_map_find_value(global.tile_definitions, tile_key);
+	if (tile_info = undefined) { return }
 	if tile_info.is_transparent {
 		gpu_set_zwriteenable(false);
 	} else {
 		gpu_set_zwriteenable(true);
 	}
-
-	var tint_color = (dist > digital_distance) ? c_lime : get_tint_from_distance(dist);
-	var _px = (_gx + _offset_x) * _tile_w;
-	var _py = (_gy + _offset_y) * _tile_w;
-
+	var tint_color = get_tint_from_distance(dist);
+	var _px = (_gx + _offset_x) * _tile_w
+	var _py = (_gy + _offset_y) * _tile_w
 	switch (tile_key) {
-		case global.TILE_WALL:
-			draw_wall(_px, _py, sprite, tint_color);
-			break;
-
+	    case global.TILE_WALL:
+	        draw_wall(_px, _py, tile_info.sprite, tint_color);
+	        break;
+		
 		case global.TILE_ROOM:
-			draw_floor(_px, _py, 0, sprite1, tint_color);
-			draw_floor(_px, _py, _tile_t, sprite, tint_color);
+			draw_floor(_px, _py, 0, tile_info.sprite1, tint_color);
+			draw_floor(_px, _py, tile_tall, tile_info.sprite, tint_color);
 			break;
-
 		case global.TILE_DOOR:
-			var tiles_door = adjacent_tiles(_gx, _gy);
-			draw_floor(_px, _py, 0, sprite1, tint_color);
-			draw_floor(_px, _py, _tile_t, sprite2, tint_color);
+			var tiles_door = adjacent_tiles(_gx, _gy)
+			
+			draw_floor(_px, _py, 0, tile_info.sprite1, tint_color);
+			draw_floor(_px, _py, tile_tall, tile_info.sprite2, tint_color);
 
-			if (tiles_door.left == global.TILE_WALL && tiles_door.right == global.TILE_WALL) {
-				draw_pane(_px, _py, 0, sprite, tint_color);
+		    if (tiles_door.left == global.TILE_WALL && tiles_door.right == global.TILE_WALL) {
+		        draw_pane(_px, _py, 0, tile_info.sprite, tint_color);
+		    }
+		    else if (tiles_door.top == global.TILE_WALL && tiles_door.bottom == global.TILE_WALL) {
+		        draw_pane(_px, _py, 90, tile_info.sprite, tint_color);
+		    } else {
+				// Handle: No proper connection
 			}
-			else if (tiles_door.top == global.TILE_WALL && tiles_door.bottom == global.TILE_WALL) {
-				draw_pane(_px, _py, 90, sprite, tint_color);
-			}
-			break;
-
+			break
 		case global.TILE_GLASS:
-			var tiles = adjacent_tiles(_gx, _gy);
+			var tiles = adjacent_tiles(_gx, _gy)
 			var _top_info = ds_map_find_value(global.tile_definitions, tiles.top);
 			var _bottom_info = ds_map_find_value(global.tile_definitions, tiles.bottom);
 			var _left_info = ds_map_find_value(global.tile_definitions, tiles.left);
 			var _right_info = ds_map_find_value(global.tile_definitions, tiles.right);
+			
+			draw_floor(_px, _py, 0, tile_info.sprite1, tint_color);
+			draw_floor(_px, _py, tile_tall, tile_info.sprite2, tint_color);
 
-			draw_floor(_px, _py, 0, sprite1, tint_color);
-			draw_floor(_px, _py, _tile_t, sprite2, tint_color);
-
-			if (_left_info.is_wall && _right_info.is_wall) {
-				draw_pane(_px, _py, 0, sprite, tint_color);
+		    if (_left_info.is_wall && _right_info.is_wall) {
+		        draw_pane(_px, _py, 0, tile_info.sprite, tint_color);
+		    }
+		    else if (_top_info.is_wall && _bottom_info.is_wall) {
+		        draw_pane(_px, _py, 90, tile_info.sprite, tint_color);
+		    } else {
+				// Handle: No proper connection possible
 			}
-			else if (_top_info.is_wall && _bottom_info.is_wall) {
-				draw_pane(_px, _py, 90, sprite, tint_color);
-			}
-			break;
-
-		default:
-			break;
+	    default:
+	        break;
 	}
 }
 
-
 function get_tint_from_distance(dist) {
-    var t = clamp(dist / (max_depth/4), 0, 1);
+    var t = clamp(dist / (max_depth-2.75), 0, 1);
     var brightness = 1.0 - t;
     var cval = floor(brightness * 255);
     return make_color_rgb(cval, cval, cval);
 }
-
 
 function draw_topdown_dungeon_debug(__x, __y) {
     var tile_size = 1;
@@ -336,11 +304,32 @@ function draw_room_debug_view(room_list, offset_x, offset_y) {
         var right  = draw_origin_x + bounds.right  * scale + scale;
         var top    = draw_origin_y + bounds.top    * scale;
         var bottom = draw_origin_y + bounds.bottom * scale + scale;
+		var conn_count = ds_list_size(_room.connected_rooms);
+		switch (conn_count) {
+		    case 1:
+		        draw_set_color(c_fuchsia);
+		        break;
+			case 2:
+		        draw_set_color(c_red);
+		        break;
+			case 3:
+		        draw_set_color(c_orange);
+		        break;
+			case 4:
+		        draw_set_color(c_yellow);
+		        break;
+			case 5:
+		        draw_set_color(c_green);
+		        break;
+		    default:
+		        draw_set_color(c_white);
+		        break;
+		}
 
-        draw_set_color(c_aqua);
+        //draw_set_color(c_aqua);
         draw_rectangle(left, top, right, bottom, true);
 		
-		draw_set_color(c_red);
+		//draw_set_color(c_red);
         // Draw room center
         var cx = draw_origin_x + _room.x * scale;
         var cy = draw_origin_y + _room.y * scale;
