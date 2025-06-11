@@ -6,7 +6,7 @@ function process_game_initialize() {
 	#macro display_width 360
 	#macro display_height 240
 	//#macro grid_size 64
-	#macro grid_size 64
+	#macro grid_size 128
 	
 	global.vf_wall = vertex_format_position_3d_color_texture()
 	global.vf_quad = vertex_format_position_3d_color_texture()

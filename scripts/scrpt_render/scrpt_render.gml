@@ -111,7 +111,7 @@ function get_tint_from_distance(dist) {
 
 
 function draw_topdown_dungeon_debug(__x, __y) {
-    var tile_size = 2;
+    var tile_size = 1;
     var offset_x  = __x;
     var offset_y  = __y;
 
@@ -142,7 +142,7 @@ function draw_topdown_dungeon_debug(__x, __y) {
     var px = offset_x + player_gx * tile_size + tile_size * 0.5;
     var py = offset_y + player_gy * tile_size + tile_size * 0.5;
 
-    draw_set_color(c_white);
+    draw_set_color(c_gray);
     var line_len = tile_size * 2;
 	var snapped = (round(angle_wrap(player_angle) / 90) mod 4);
     switch (snapped) {
@@ -157,9 +157,9 @@ function draw_topdown_dungeon_debug(__x, __y) {
 
     draw_set_color(c_white);
 }
-
+/*
 function draw_topdown_dungeon_radar(__x, __y, _width) {
-    var tile_size = 2;
+    var tile_size = 1;
     var _offset_x  = __x;
     var _offset_y  = __y;
 
@@ -177,8 +177,9 @@ function draw_topdown_dungeon_radar(__x, __y, _width) {
         for (var gx = 0; gx < grid_w; gx++) {
             var dx = gx - player_gx;
             var dy = gy - player_gy;
-            var dist = sqrt(dx * dx + dy * dy);
-            if (dist > _width) continue;
+            var dist_sq = dx * dx + dy * dy;
+			var max_dist_sq = _width * _width;
+			if (dist_sq > max_dist_sq) continue;
 
             var cell_type = global.main_grid[# gx, gy];
             if (cell_type == "void") or (cell_type == "wall") {
@@ -190,7 +191,7 @@ function draw_topdown_dungeon_radar(__x, __y, _width) {
             var y1 = center_y + dy * tile_size;
 			
             // Set alpha falloff
-            var alpha = 1.0 - (dist / _width);
+            var alpha = 1.0 - (dist_sq / max_dist_sq);
             //draw_set_alpha(alpha);
 			draw_set_alpha(1);
             draw_point(x1 + 1, y1 + 1);
@@ -206,7 +207,7 @@ function draw_topdown_dungeon_radar(__x, __y, _width) {
 	center_y++;
 
     // Draw facing direction
-    draw_set_color(c_white);
+    draw_set_color(c_gray);
     var line_len = tile_size * 2;
 	var snapped = (round(angle_wrap(player_angle) / 90) mod 4);
     switch (snapped) {
@@ -220,11 +221,59 @@ function draw_topdown_dungeon_radar(__x, __y, _width) {
     draw_point(center_x, center_y);
 
     draw_set_color(c_white);
+}*/
+
+function draw_topdown_dungeon_radar(__x, __y, _width) {
+    var grid = global.main_grid;
+    var half_size = _width div 2;
+    var center_x = __x;
+    var center_y = __y;
+    var player_gx = player_x + global.MAP_OFFSET_X;
+    var player_gy = player_y + global.MAP_OFFSET_Y;
+    var tile_size = 2;
+
+    for (var gy = max(0, player_gy - half_size); gy < min(grid_size, player_gy + half_size); gy++) {
+        for (var gx = max(0, player_gx - half_size); gx < min(grid_size, player_gx + half_size); gx++) {
+            
+            var cell_type = grid[# gx, gy];
+            if (cell_type == "void" || cell_type == "wall") continue;
+
+            var dx = gx - player_gx;
+            var dy = gy - player_gy;
+            var x1 = center_x + dx * tile_size;
+            var y1 = center_y + dy * tile_size;
+
+            draw_set_color(c_white);
+            draw_point(x1 + 1, y1 + 1);
+        }
+    }
+
+    draw_set_alpha(1);
+
+    center_x++;
+    center_y++;
+    draw_set_color(c_red);
+    draw_point(center_x, center_y);
+
+    draw_set_color(c_gray);
+    var line_len = 2;
+    var dir = (round(angle_wrap(player_angle) / 90) mod 4);
+    switch (dir) {
+        case 0: draw_line(center_x, center_y, center_x + line_len, center_y); break;
+        case 1: draw_line(center_x, center_y, center_x, center_y - line_len); break;
+        case 2: draw_line(center_x, center_y, center_x - line_len, center_y); break;
+        case 3: draw_line(center_x, center_y, center_x, center_y + line_len); break;
+    }
+
+    draw_set_color(c_white);
 }
 
-function draw_room_debug_view(room_list, offset_x, offset_y, scale) {
+function draw_room_debug_view(room_list, offset_x, offset_y) {
+	var scale = 1;
 	draw_set_font(fnt_debug)
     var room_count = ds_list_size(room_list);
+	offset_x += (0.5 * scale);
+	offset_y += (0.5 * scale);
 
     for (var i = 0; i < room_count; i++) {
         var _room = ds_list_find_value(room_list, i);

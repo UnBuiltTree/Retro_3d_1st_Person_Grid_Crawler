@@ -14,7 +14,7 @@ if (surface_exists(ui_surf)) {
     var ui_tex = surface_get_texture(ui_surf);
 }
 
-instance_create_layer(0, 0, "Instances", obj_dungeon_generator);
+instance_create_layer(0, 0, "Debug", obj_dungeon_generator);
 
 tile_width = 64;
 tile_tall  = 48;
