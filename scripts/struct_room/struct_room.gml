@@ -36,6 +36,31 @@ function struct_room(room_id, x_center, y_center, room_w, room_h) constructor
 	    return closest_id
 	}
 	
+	rooms_sorted_by_distance = function(room_list) {
+	    var nRooms = ds_list_size(room_list);
+	    var pq = ds_priority_create(); // priority queue to sort by distance
+
+	    for (var i = 0; i < nRooms; i++) {
+	        var other_room = ds_list_find_value(room_list, i);
+	        if (other_room == undefined || other_room.id == id) continue;
+
+	        var dist = point_distance(other_room.x, other_room.y, x, y);
+
+	        // Add the room using its distance as priority
+	        ds_priority_add(pq, other_room, dist);
+	    }
+
+	    var sorted_rooms = ds_list_create();
+	    while (!ds_priority_empty(pq)) {
+	        var _room = ds_priority_delete_min(pq); // get next closest
+	        ds_list_add(sorted_rooms, _room);
+	    }
+
+	    ds_priority_destroy(pq);
+	    return sorted_rooms;
+	}
+
+	
 	get_bounds = function(){
 		return {
 			left   : x - floor(width / 2),

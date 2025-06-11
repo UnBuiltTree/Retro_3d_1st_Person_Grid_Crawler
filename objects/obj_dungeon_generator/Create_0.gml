@@ -92,33 +92,46 @@ for (var j = 0; j < _pc_count; j++) {
     );
 }
 
+for (var j = 0; j < ds_list_size(pending_connections); j++) {
+    var conn = pending_connections[| j];
+    var from_idx = conn[0];
+    var to_idx   = conn[1];
+
+    var room1 = ds_list_find_value(dungeon_rooms, from_idx);
+    var room2 = ds_list_find_value(dungeon_rooms, to_idx);
+
+    if (room1 != undefined && room2 != undefined) {
+        create_connection(global.main_grid, room1, room2);
+    }
+}
+
 // Extra connection for the depressed and lonely outer rooms
-ds_list_clear(pending_connections)
-var connected_list = ds_list_create()
-for(var i = 0; i < ds_list_size(dungeon_rooms); i++){
-	var room_ = ds_list_find_value(dungeon_rooms, i)
-	if(room_ != undefined and ds_list_size(room_.connected_rooms) == 1){
-		ds_list_add(connected_list, room_)
+ds_list_clear(pending_connections);
+for (var i = 0; i < ds_list_size(dungeon_rooms); i++) {
+	var room_ = ds_list_find_value(dungeon_rooms, i);
+
+	if (room_ != undefined && ds_list_size(room_.connected_rooms) == 1) {
+		var sorted_rooms = room_.rooms_sorted_by_distance(dungeon_rooms);
+
+		// Skip if less than 2 candidates
+		if (ds_list_size(sorted_rooms) < 2) continue;
+
+		// Second closest room (index 1, since index 0 is the closest)
+		var second_closest = ds_list_find_value(sorted_rooms, 1);
+
+		if (second_closest != undefined) {
+			var conn = [ room_.id, second_closest.id ];
+			ds_list_add(pending_connections, conn);
+			 connect_rooms(
+		        dungeon_rooms,
+		        room_.id,
+		        second_closest.id
+		    );
+		}
+		ds_list_destroy(sorted_rooms);
 	}
 }
-var bonus_points = ds_list_find_value(connected_list, 0)
-while(ds_list_size(connected_list) > 1){
-	var room_ = ds_list_find_value(connected_list, 0)
-	var nearest = room_.closest_room(connected_list)
-	if (nearest != undefined) {
-		// Store the connection [from_index, to_index]
-		var conn = [ room_.id, nearest ];
-		ds_list_add(pending_connections, conn);
-		ds_list_delete(connected_list, 0)
-	} else {
-		throw("MOMMY")
-	}
-}
-var room_ = ds_list_find_value(connected_list, 0)
-var conni = [ room_.id, bonus_points.id ];
-ds_list_add(pending_connections, conni);
-ds_list_delete(connected_list, 0)
-ds_list_destroy(connected_list)
+
 _pc_count = ds_list_size(pending_connections);
 for (var j = 0; j < _pc_count; j++) {
     var conn = pending_connections[| j];
@@ -134,6 +147,20 @@ for (var j = 0; j < _pc_count; j++) {
 	    );
 	}
 }
+
+for (var j = 0; j < ds_list_size(pending_connections); j++) {
+    var conn = pending_connections[| j];
+    var from_idx = conn[0];
+    var to_idx   = conn[1];
+
+    var room1 = ds_list_find_value(dungeon_rooms, from_idx);
+    var room2 = ds_list_find_value(dungeon_rooms, to_idx);
+
+    if (room1 != undefined && room2 != undefined) {
+        create_connection(global.main_grid, room1, room2);
+    }
+}
+
 ds_list_destroy(pending_connections);
 
 /*
