@@ -104,7 +104,6 @@ function create_connection(grid_, room1, room2) {
     }
 }
 
-
 function carve_tile(grid_, _x, _y) {
 
     if (_x >= 0 && _x < grid_size && _y >= 0 && _y < grid_size) {
