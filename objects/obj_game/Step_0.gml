@@ -1,18 +1,18 @@
 if (move_cooldown > 0) move_cooldown--;
 
 // turning
-if (!turning) {
-    if (keyboard_check_pressed(ord("A"))) {
+if (turn_progress == 0) {
+    if (keyboard_check(ord("A"))) {
         turning			= true;
-        turn_progress	= 0;
+        turn_progress	= 1;
         turn_from_angle	= player_angle;
-        turn_to_angle	= (player_angle + 90) mod 360;
+        turn_to_angle	= (player_angle + 45) mod 360;
     }
-    else if (keyboard_check_pressed(ord("D"))) {
+    else if (keyboard_check(ord("D"))) {
         turning			= true;
-        turn_progress	= 0;
+        turn_progress	= 1;
         turn_from_angle	= player_angle;
-        turn_to_angle	= (player_angle - 90 + 360) mod 360;
+        turn_to_angle	= (player_angle - 45 + 360) mod 360;
     }
 } else {
     turn_progress++;
@@ -25,6 +25,9 @@ if (!turning) {
         player_angle	= turn_to_angle;
         move_cooldown	= move_cooldown_max;
     }
+	if turn_progress == turn_duration {
+		turn_progress = 0;
+	}
 }
 
 // movement
@@ -66,6 +69,9 @@ if (moving) {
             {
                 var tile_key = global.main_grid[# gx, gy];
                 var tile_info = ds_map_find_value(global.tile_definitions, tile_key);
+				
+				
+				
                 if (tile_info != undefined && tile_info.is_walkable) {
                     moving         = true;
                     move_progress  = 0;

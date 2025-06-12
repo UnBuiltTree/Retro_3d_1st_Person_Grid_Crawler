@@ -8,11 +8,12 @@ function draw_dungeon() {
 
 	var rpx = player_real_x + global.MAP_OFFSET_X;
     var rpy = player_real_y + global.MAP_OFFSET_Y;
-    var bpx = rpx + lengthdir_x(1, player_angle + 180);
-    var bpy = rpy + lengthdir_y(1, player_angle + 180);
+	
+    var bpx = rpx + lengthdir_x(2, player_angle + 180);
+    var bpy = rpy + lengthdir_y(2, player_angle + 180);
 
     var pa = -player_angle;
-    var cone_half_angle = 60;
+    var cone_half_angle = 45;
     var cone_half_rad   = degtorad(cone_half_angle);
 
     matrix_set(matrix_world, matrix_build_identity());
