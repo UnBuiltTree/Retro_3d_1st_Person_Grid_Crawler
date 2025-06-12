@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"script_dungeon_gen",
+  "%Name":"scrpt_dungeon_gen",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"script_dungeon_gen",
+  "name":"scrpt_dungeon_gen",
   "parent":{
     "name":"Scripts",
     "path":"folders/Scripts.yy",

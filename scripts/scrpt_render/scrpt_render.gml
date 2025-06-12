@@ -110,122 +110,6 @@ function get_tint_from_distance(dist) {
     return make_color_rgb(cval, cval, cval);
 }
 
-function draw_topdown_dungeon_debug(__x, __y) {
-    var tile_size = 1;
-    var grid_w = ds_grid_width(global.main_grid);
-    var grid_h = ds_grid_height(global.main_grid);
-
-    var offset_x = __x - (grid_w * tile_size) / 2;
-    var offset_y = __y - (grid_h * tile_size) / 2;
-
-    for (var gy = 0; gy < grid_h; gy++) {
-        for (var gx = 0; gx < grid_w; gx++) {
-            var cell_type = global.main_grid[# gx, gy];
-            if (cell_type == "void") {
-                continue; // skip void cells
-            }
-
-            var x1 = offset_x + gx * tile_size;
-            var y1 = offset_y + gy * tile_size;
-
-            switch (cell_type) {
-                case "wall":  draw_set_color(c_blue);     break;
-                case "door":  draw_set_color(c_fuchsia);  break;
-                default:      draw_set_color(c_white);    break;
-            }
-
-            draw_point(x1 + 1, y1 + 1);
-        }
-    }
-
-    // Draw player position
-    var player_gx = player_x + global.MAP_OFFSET_X;
-    var player_gy = player_y + global.MAP_OFFSET_Y;
-
-    var px = offset_x + player_gx * tile_size + tile_size * 0.5;
-    var py = offset_y + player_gy * tile_size + tile_size * 0.5;
-
-    // Draw facing direction
-    draw_set_color(c_gray);
-    var line_len = tile_size * 2;
-    var snapped = (round(angle_wrap(player_angle) / 90) mod 4);
-    switch (snapped) {
-        case 0: draw_line(px, py, px + line_len, py); break;
-        case 1: draw_line(px, py, px, py - line_len); break;
-        case 2: draw_line(px, py, px - line_len, py); break;
-        case 3: draw_line(px, py, px, py + line_len); break;
-    }
-
-    draw_set_color(c_red);
-    draw_point(px, py);
-
-    draw_set_color(c_white);
-}
-/*
-function draw_topdown_dungeon_radar(__x, __y, _width) {
-    var tile_size = 1;
-    var _offset_x  = __x;
-    var _offset_y  = __y;
-
-    var grid_w = grid_size
-    var grid_h = grid_size
-
-    var player_gx = player_x + global.MAP_OFFSET_X;
-    var player_gy = player_y + global.MAP_OFFSET_Y;
-
-    // Center of the radar
-    var center_x = _offset_x;
-    var center_y = _offset_y;
-
-    for (var gy = 0; gy < grid_h; gy++) {
-        for (var gx = 0; gx < grid_w; gx++) {
-            var dx = gx - player_gx;
-            var dy = gy - player_gy;
-            var dist_sq = dx * dx + dy * dy;
-			var max_dist_sq = _width * _width;
-			if (dist_sq > max_dist_sq) continue;
-
-            var cell_type = global.main_grid[# gx, gy];
-            if (cell_type == "void") or (cell_type == "wall") {
-                continue; // skip void cells
-            }
-			draw_set_color(c_white)
-
-            var x1 = center_x + dx * tile_size;
-            var y1 = center_y + dy * tile_size;
-			
-            // Set alpha falloff
-            var alpha = 1.0 - (dist_sq / max_dist_sq);
-            //draw_set_alpha(alpha);
-			draw_set_alpha(1);
-            draw_point(x1 + 1, y1 + 1);
-        }
-    }
-
-    draw_set_alpha(1);
-
-    
-    // Draw player center point
-    draw_set_color(c_red);
-	center_x++;
-	center_y++;
-
-    // Draw facing direction
-    draw_set_color(c_gray);
-    var line_len = tile_size * 2;
-	var snapped = (round(angle_wrap(player_angle) / 90) mod 4);
-    switch (snapped) {
-        case 0: draw_line(center_x, center_y, center_x + line_len, center_y); break;
-		case 1: draw_line(center_x, center_y, center_x, center_y - line_len); break;
-        case 2: draw_line(center_x, center_y, center_x - line_len, center_y); break;
-        case 3: draw_line(center_x, center_y, center_x, center_y + line_len); break;
-    }
-
-    draw_set_color(c_red);
-    draw_point(center_x, center_y);
-
-    draw_set_color(c_white);
-}*/
 
 function draw_topdown_dungeon_radar(__x, __y, _width) {
     var grid = global.main_grid;
@@ -272,83 +156,102 @@ function draw_topdown_dungeon_radar(__x, __y, _width) {
     draw_set_color(c_white);
 }
 
-function draw_room_debug_view(room_list, offset_x, offset_y) {
-    var scale = 1;
+function draw_topdown_dungeon_debug(__x, __y, scale = 1) {
+    var tile_size = scale;
+    var grid_w = ds_grid_width(global.main_grid);
+    var grid_h = ds_grid_height(global.main_grid);
+
+    var offset_x = __x - (grid_w * tile_size) / 2;
+    var offset_y = __y - (grid_h * tile_size) / 2;
+
+    for (var gy = 0; gy < grid_h; gy++) {
+        for (var gx = 0; gx < grid_w; gx++) {
+            var cell_type = global.main_grid[# gx, gy];
+            if (cell_type == "void") continue;
+
+            var x1 = offset_x + gx * tile_size;
+            var y1 = offset_y + gy * tile_size;
+
+            switch (cell_type) {
+                case "wall": draw_set_color(c_blue); break;
+                case "door": draw_set_color(c_fuchsia); break;
+                default: draw_set_color(c_white); break;
+            }
+
+            draw_point(x1, y1);
+        }
+    }
+
+    var player_gx = global.player_x + global.MAP_OFFSET_X;
+    var player_gy = global.player_y + global.MAP_OFFSET_Y;
+
+    var px = offset_x + player_gx * tile_size + tile_size * 0.5;
+    var py = offset_y + player_gy * tile_size + tile_size * 0.5;
+
+    draw_set_color(c_gray);
+    var line_len = tile_size * 2;
+    var snapped = (round(angle_wrap(global.player_angle) / 90) mod 4);
+    switch (snapped) {
+        case 0: draw_line(px, py, px + line_len, py); break;
+        case 1: draw_line(px, py, px, py - line_len); break;
+        case 2: draw_line(px, py, px - line_len, py); break;
+        case 3: draw_line(px, py, px, py + line_len); break;
+    }
+
+    draw_set_color(c_red);
+    draw_circle(px, py, tile_size * 0.3, false);
+    draw_set_color(c_white);
+}
+
+function draw_room_debug_view(room_list, center_x, center_y, scale = 1) {
     draw_set_font(fnt_debug);
+    var tile_size = scale;
+
+    var grid_w = ds_grid_width(global.main_grid);
+    var grid_h = ds_grid_height(global.main_grid);
+
+    var offset_x = center_x - (grid_w * tile_size) / 2;
+    var offset_y = center_y - (grid_h * tile_size) / 2;
+
     var room_count = ds_list_size(room_list);
 
-    var min_x = infinity;
-    var max_x = -infinity;
-    var min_y = infinity;
-    var max_y = -infinity;
-
-    for (var i = 0; i < room_count; i++) {
-        var _room = ds_list_find_value(room_list, i);
-        var bounds = _room.get_bounds();
-        min_x = min(min_x, bounds.left);
-        max_x = max(max_x, bounds.right);
-        min_y = min(min_y, bounds.top);
-        max_y = max(max_y, bounds.bottom);
-    }
-
-    var total_w = (max_x - min_x + 1) * scale;
-    var total_h = (max_y - min_y + 1) * scale;
-
-    var draw_origin_x = offset_x - (total_w / 2) - (min_x * scale);
-    var draw_origin_y = offset_y - (total_h / 2) - (min_y * scale);
-
     for (var i = 0; i < room_count; i++) {
         var _room = ds_list_find_value(room_list, i);
         var bounds = _room.get_bounds();
 
-        var left   = draw_origin_x + bounds.left   * scale;
-        var right  = draw_origin_x + bounds.right  * scale + scale;
-        var top    = draw_origin_y + bounds.top    * scale;
-        var bottom = draw_origin_y + bounds.bottom * scale + scale;
-		var conn_count = ds_list_size(_room.connected_rooms);
-		switch (conn_count) {
-		    case 1:
-		        draw_set_color(c_fuchsia);
-		        break;
-			case 2:
-		        draw_set_color(c_red);
-		        break;
-			case 3:
-		        draw_set_color(c_orange);
-		        break;
-			case 4:
-		        draw_set_color(c_yellow);
-		        break;
-			case 5:
-		        draw_set_color(c_green);
-		        break;
-		    default:
-		        draw_set_color(c_white);
-		        break;
-		}
+        var left   = offset_x + bounds.left   * tile_size;
+        var right  = offset_x + (bounds.right) * tile_size;
+        var top    = offset_y + bounds.top    * tile_size;
+        var bottom = offset_y + (bounds.bottom) * tile_size;
 
-        //draw_set_color(c_aqua);
+        var conn_count = ds_list_size(_room.connected_rooms);
+        switch (conn_count) {
+            case 1: draw_set_color(c_fuchsia); break;
+            case 2: draw_set_color(c_red); break;
+            case 3: draw_set_color(c_orange); break;
+            case 4: draw_set_color(c_yellow); break;
+            case 5: draw_set_color(c_green); break;
+            default: draw_set_color(c_white); break;
+        }
+
         draw_rectangle(left, top, right, bottom, true);
-		
-		//draw_set_color(c_red);
-        // Draw room center
-        var cx = draw_origin_x + _room.x * scale;
-        var cy = draw_origin_y + _room.y * scale;
-		var cs = ((_room.width+_room.height)/2) * scale;
-        draw_circle(cx, cy, cs/4, true);
+
+        var cx = offset_x + _room.x * tile_size;
+        var cy = offset_y + _room.y * tile_size;
+        var cs = ((_room.width + _room.height) / 2) * tile_size;
+        draw_circle(cx, cy, cs / 4, true);
     }
 
     for (var i = 0; i < room_count; i++) {
         var _room = ds_list_find_value(room_list, i);
-        var cx1 = draw_origin_x + _room.x * scale;
-        var cy1 = draw_origin_y + _room.y * scale;
+        var cx1 = offset_x + _room.x * tile_size;
+        var cy1 = offset_y + _room.y * tile_size;
 
         var conn_count = ds_list_size(_room.connected_rooms);
         for (var j = 0; j < conn_count; j++) {
             var conn_id = ds_list_find_value(_room.connected_rooms, j);
             var other_room = undefined;
 
-            // Find connected room by ID
             for (var k = 0; k < room_count; k++) {
                 var test_room = ds_list_find_value(room_list, k);
                 if (test_room.id == conn_id) {
@@ -358,9 +261,8 @@ function draw_room_debug_view(room_list, offset_x, offset_y) {
             }
 
             if (other_room != undefined) {
-                var cx2 = draw_origin_x + other_room.x * scale;
-                var cy2 = draw_origin_y + other_room.y * scale;
-
+                var cx2 = offset_x + other_room.x * tile_size;
+                var cy2 = offset_y + other_room.y * tile_size;
                 draw_set_color(c_red);
                 draw_line(cx1, cy1, cx2, cy2);
             }
@@ -368,14 +270,14 @@ function draw_room_debug_view(room_list, offset_x, offset_y) {
     }
 
     // Draw Player
-    var player_draw_x = draw_origin_x + (global.player_x  + global.MAP_OFFSET_X) * scale;
-    var player_draw_y = draw_origin_y + (global.player_y + global.MAP_OFFSET_Y) * scale;
-    var dir_length = 3;
+    var player_draw_x = offset_x + (global.player_x + global.MAP_OFFSET_X) * tile_size;
+    var player_draw_y = offset_y + (global.player_y + global.MAP_OFFSET_Y) * tile_size;
+    var dir_length = tile_size * 3;
 
     draw_set_color(c_lime);
-    draw_circle(player_draw_x, player_draw_y, 1, true);
+    draw_circle(player_draw_x, player_draw_y, tile_size * 0.5, true);
 
-    var dir_rad = angle_wrap(global.player_angle)
+    var dir_rad = angle_wrap(global.player_angle);
     var dx = lengthdir_x(dir_length, dir_rad);
     var dy = lengthdir_y(dir_length, dir_rad);
     draw_line(player_draw_x, player_draw_y, player_draw_x + dx, player_draw_y + dy);
