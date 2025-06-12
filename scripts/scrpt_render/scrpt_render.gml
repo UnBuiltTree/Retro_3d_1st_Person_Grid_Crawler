@@ -1,3 +1,4 @@
+
 function draw_dungeon() {
     var grid_w = grid_size
     var grid_h = grid_size
@@ -272,7 +273,7 @@ function draw_topdown_dungeon_radar(__x, __y, _width) {
 }
 
 function draw_room_debug_view(room_list, offset_x, offset_y) {
-    var scale = 0.5;
+    var scale = 1;
     draw_set_font(fnt_debug);
     var room_count = ds_list_size(room_list);
 

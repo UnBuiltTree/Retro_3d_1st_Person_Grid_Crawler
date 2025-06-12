@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"create_tile",
+  "%Name":"script_tile_stuff",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"create_tile",
+  "name":"script_tile_stuff",
   "parent":{
     "name":"Scripts",
     "path":"folders/Scripts.yy",

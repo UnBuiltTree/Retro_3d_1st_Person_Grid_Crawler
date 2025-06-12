@@ -136,8 +136,12 @@ function connect_rooms(room_list, room_id1, room_id2) {
         show_debug_message("Error: connect_rooms - invalid room IDs");
         return;
     }
-	ds_list_add(room1.connected_rooms, room2.id)
-	ds_list_add(room2.connected_rooms, room1.id)
+	if ds_list_find_index(room1.connected_rooms, room2.id) == -1 {
+		ds_list_add(room1.connected_rooms, room2.id)
+	}
+	if ds_list_find_index(room2.connected_rooms, room1.id) == -1 {
+		ds_list_add(room2.connected_rooms, room1.id)
+	}
 }
 
 function render_room(grid_, _room_map) {

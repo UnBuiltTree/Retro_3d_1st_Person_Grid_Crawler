@@ -28,17 +28,17 @@ var pending_connections = ds_list_create();
 var last_index = 0;
 
 //generate dungeon rooms
-for (var i = 1; i < 200; ++i) {
-    var _room_width  = irandom_range(15,15);
+for (var i = 1; i < 32; ++i) {
+    var _room_width  = irandom_range(5,12);
     if (_room_width mod 2 == 0) _room_width++;
 
-    var _room_height = irandom_range(15,15);
+    var _room_height = irandom_range(5,12);
     if (_room_height mod 2 == 0) _room_height++;
 	
 	show_debug_message(string(_room_width) + ", " + string(_room_width))
 
-    var closeness = 6;
-	var choas = 10;
+    var closeness = 2;
+	var choas = 5;
 
     var new_room = find_room_place(
         global.main_grid,
@@ -183,4 +183,27 @@ if (last_room != undefined) {
     show_debug_message("Center of room: (" + string(_x_center) + ", " + string(_y_center) + ")");
     global.spawn_x = _x_center - global.MAP_OFFSET_X;
     global.spawn_y = _y_center - global.MAP_OFFSET_Y;
+}
+
+function log_list(list){
+    for (var i = 0; i < ds_list_size(list); i++) {
+        show_debug_message(list[| i]);
+	}
+}
+
+
+for (var j = 0; j < ds_list_size(dungeon_rooms); j++) {
+	var _room = ds_list_find_value(dungeon_rooms, j);
+	var _room_id = _room.id
+	var _room_x = _room.x
+	var _room_y = _room.y
+	
+	var _room_connections = _room.connected_rooms
+	if ds_list_size(_room_connections) > 4 {
+	
+	show_debug_message("room" + string(_room_id) + ", " + string(_room_x) + ", " + string(_room_y))
+	show_debug_message("connections")
+	log_list(_room_connections)
+	show_debug_message("---")
+	}
 }
