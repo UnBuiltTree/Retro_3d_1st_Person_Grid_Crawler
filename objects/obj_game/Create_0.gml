@@ -48,6 +48,7 @@ turn_to_angle	= 0;
 
 moving				= false;
 move_duration		= 20;
+move_duration_base = 20;
 move_delay			= 8;
 move_cooldown		= 0;
 move_cooldown_max	= 1;
