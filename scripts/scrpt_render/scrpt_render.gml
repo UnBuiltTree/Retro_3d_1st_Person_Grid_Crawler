@@ -1,3 +1,4 @@
+
 function draw_dungeon() {
     var grid_w = grid_size
     var grid_h = grid_size
@@ -108,7 +109,6 @@ function get_tint_from_distance(dist) {
     var cval = floor(brightness * 255);
     return make_color_rgb(cval, cval, cval);
 }
-
 
 function draw_topdown_dungeon_debug(__x, __y) {
     var tile_size = 1;
@@ -273,7 +273,7 @@ function draw_topdown_dungeon_radar(__x, __y, _width) {
 }
 
 function draw_room_debug_view(room_list, offset_x, offset_y) {
-    var scale = 0.5;
+    var scale = 1;
     draw_set_font(fnt_debug);
     var room_count = ds_list_size(room_list);
 
@@ -305,11 +305,32 @@ function draw_room_debug_view(room_list, offset_x, offset_y) {
         var right  = draw_origin_x + bounds.right  * scale + scale;
         var top    = draw_origin_y + bounds.top    * scale;
         var bottom = draw_origin_y + bounds.bottom * scale + scale;
+		var conn_count = ds_list_size(_room.connected_rooms);
+		switch (conn_count) {
+		    case 1:
+		        draw_set_color(c_fuchsia);
+		        break;
+			case 2:
+		        draw_set_color(c_red);
+		        break;
+			case 3:
+		        draw_set_color(c_orange);
+		        break;
+			case 4:
+		        draw_set_color(c_yellow);
+		        break;
+			case 5:
+		        draw_set_color(c_green);
+		        break;
+		    default:
+		        draw_set_color(c_white);
+		        break;
+		}
 
-        draw_set_color(c_aqua);
+        //draw_set_color(c_aqua);
         draw_rectangle(left, top, right, bottom, true);
 		
-		draw_set_color(c_red);
+		//draw_set_color(c_red);
         // Draw room center
         var cx = draw_origin_x + _room.x * scale;
         var cy = draw_origin_y + _room.y * scale;
