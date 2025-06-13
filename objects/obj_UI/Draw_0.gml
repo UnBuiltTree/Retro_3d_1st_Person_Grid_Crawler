@@ -8,6 +8,8 @@ draw_clear_alpha(c_black, 0);
 
 // --- --- Put draw stuff in here --- ---
 
+draw_sprite_ext(spr_pov_gun, 0, display_width-64+(mouse_x_offset/4), display_height-64+(mouse_y_offset/2), 2, 2, 0, c_white, 1)
+
 draw_set_color(c_white);
 if db_view_toggle {
 	draw_topdown_dungeon_debug(room_width/2, room_height/2);
@@ -62,6 +64,10 @@ if hover_ui_movement_area { draw_set_color(c_white) } else { draw_set_color(c_gr
 draw_rectangle(movement_slide_x1, display_height, movement_slide_x2, movement_slide_y, false);
 
 draw_set_alpha(1)
+draw_set_color(c_blue)
+draw_point(mouse_x, mouse_y)
+draw_circle(mouse_x-0.5, mouse_y-0.5, 3, true)
+draw_set_color(c_white)
 
 
 // --- --- End drawing on UI --- ---

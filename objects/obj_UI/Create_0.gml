@@ -3,6 +3,9 @@ ui_surf = surface_create(display_width, display_height);
 if (surface_exists(ui_surf)) {
     var ui_tex = surface_get_texture(ui_surf);
 }
+
+window_set_cursor(cr_none);
+
 display_middle = display_width/2
 display_center = display_height/2
 
@@ -11,6 +14,15 @@ db_view_toggle = false;
 
 hover_ui_empty = false;
 ui_empty = [64, 64, display_width-64, display_height-64]
+
+
+raw_x = mouse_x - display_middle;
+raw_y = mouse_y - display_center;
+mouse_offset_target_x = 0;
+mouse_offset_target_y = 0;
+mouse_x_offset = 0;
+mouse_y_offset = 0;
+smooth_factor = 0.15;
 
 // ui_name_area for a detecable area on the ui
 // ui_name_btn for a button on the ui
