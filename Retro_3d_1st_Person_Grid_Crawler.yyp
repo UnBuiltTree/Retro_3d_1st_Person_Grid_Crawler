@@ -59,6 +59,7 @@
     {"id":{"name":"spr_door_open","path":"sprites/spr_door_open/spr_door_open.yy",},},
     {"id":{"name":"spr_floor","path":"sprites/spr_floor/spr_floor.yy",},},
     {"id":{"name":"spr_glass","path":"sprites/spr_glass/spr_glass.yy",},},
+    {"id":{"name":"spr_knife","path":"sprites/spr_knife/spr_knife.yy",},},
     {"id":{"name":"spr_radar_player","path":"sprites/spr_radar_player/spr_radar_player.yy",},},
     {"id":{"name":"spr_radar_tile","path":"sprites/spr_radar_tile/spr_radar_tile.yy",},},
     {"id":{"name":"spr_wall","path":"sprites/spr_wall/spr_wall.yy",},},

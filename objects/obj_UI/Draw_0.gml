@@ -25,6 +25,44 @@ if text_toggle {
 	draw_text(0, px*3, "'C' to toggle debug view,")
 	draw_text(0, px*4, "'V' to toggle this text.")
 }
+draw_set_color(c_white)
+draw_set_alpha(0.6)
+
+if hover_ui_empty { draw_set_color(c_red) } else { draw_set_color(c_white) }
+draw_rectangle_bounds(ui_empty, true)
+
+draw_set_alpha(1)
+
+if hover_ui_knife_btn { draw_set_color(c_gray) } else { draw_set_color(c_white) }
+draw_rectangle_bounds(ui_knife_button, true)
+var slide_x = display_width - ui_knife_slide;
+var slide_y1 = display_center - 64;
+var slide_y2 = display_center + 64;
+
+
+if hover_ui_knife_area { draw_set_color(c_white) } else { draw_set_color(c_gray) }
+draw_rectangle(slide_x, slide_y1, display_width, slide_y2, false);
+
+draw_set_alpha(1)
+
+if ui_knife_slide > 0 {
+	draw_sprite_ext(spr_knife, 0, slide_x+30, display_center, 2, 2, 0, c_white, 1)
+}
+
+draw_set_alpha(1)
+
+if hover_ui_movement_btn { draw_set_color(c_gray) } else { draw_set_color(c_white) }
+draw_rectangle_bounds(ui_movement_button, true)
+var movement_slide_y = display_height - ui_movement_slide;
+var movement_slide_x1 = display_middle-128;
+var movement_slide_x2 = display_middle+128;
+
+
+if hover_ui_movement_area { draw_set_color(c_white) } else { draw_set_color(c_gray) }
+draw_rectangle(movement_slide_x1, display_height, movement_slide_x2, movement_slide_y, false);
+
+draw_set_alpha(1)
+
 
 // --- --- End drawing on UI --- ---
 

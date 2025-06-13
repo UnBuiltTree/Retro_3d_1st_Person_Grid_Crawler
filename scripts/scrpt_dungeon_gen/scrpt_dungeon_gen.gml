@@ -1,17 +1,18 @@
 function create_connection(grid_, room1, room2) {
-    var grid_w = ds_grid_width(grid_)
-    var grid_h = ds_grid_height(grid_)
+    var grid_w = ds_grid_width(grid_);
+    var grid_h = ds_grid_height(grid_);
 
-    // Room 1 bounds
-	var bounds1 = room1.get_bounds()
-	var bounds2 = room2.get_bounds()
+    // Room centers
+    var _x1 = room1.x;
+    var _y1 = room1.y;
+    var _x2 = room2.x;
+    var _y2 = room2.y;
 
-	var _x1 = room1.x
-	var _y1 = room1.y
-	var _x2 = room2.x
-	var _y2 = room2.y
+    // Room bounds
+    var bounds1 = room1.get_bounds();
+    var bounds2 = room2.get_bounds();
 
-    // Check for vertical straight connections (shared X, exclude edges)
+    // === Vertical Straight Connection ===
     var _min_shared_x = max(bounds1.left, bounds2.left);
     var _max_shared_x = min(bounds1.right, bounds2.right);
     if (_min_shared_x <= _max_shared_x) {
@@ -27,14 +28,27 @@ function create_connection(grid_, room1, room2) {
 
         if (array_length(_valid_x_list) > 0) {
             var _shared_x = _valid_x_list[irandom(array_length(_valid_x_list) - 1)];
+
+            // Main vertical hallway
             for (var _y = min(_y1, _y2); _y <= max(_y1, _y2); _y++) {
-				carve_tile_and_place_door(grid_, room1, room2, _shared_x, _y)
+                carve_tile_and_place_door(grid_, room1, room2, _shared_x, _y);
             }
+
+            // Extension to room1 center
+            for (var _x = min(_x1, _shared_x); _x <= max(_x1, _shared_x); _x++) {
+                carve_tile_and_place_door(grid_, room1, room2, _x, _y1);
+            }
+
+            // Extension to room2 center
+            for (var _x = min(_x2, _shared_x); _x <= max(_x2, _shared_x); _x++) {
+                carve_tile_and_place_door(grid_, room1, room2, _x, _y2);
+            }
+
             return;
         }
     }
 
-    // Check for horizontal straight connections (shared Y, exclude edges)
+    // === Horizontal Straight Connection ===
     var _min_shared_y = max(bounds1.top, bounds2.top);
     var _max_shared_y = min(bounds1.bottom, bounds2.bottom);
     if (_min_shared_y <= _max_shared_y) {
@@ -50,14 +64,27 @@ function create_connection(grid_, room1, room2) {
 
         if (array_length(_valid_y_list) > 0) {
             var _shared_y = _valid_y_list[irandom(array_length(_valid_y_list) - 1)];
+
+            // Main horizontal hallway
             for (var _x = min(_x1, _x2); _x <= max(_x1, _x2); _x++) {
-				carve_tile_and_place_door(grid_, room1, room2, _x, _shared_y)
+                carve_tile_and_place_door(grid_, room1, room2, _x, _shared_y);
             }
+
+            // Extension to room1 center
+            for (var _y = min(_y1, _shared_y); _y <= max(_y1, _shared_y); _y++) {
+                carve_tile_and_place_door(grid_, room1, room2, _x1, _y);
+            }
+
+            // Extension to room2 center
+            for (var _y = min(_y2, _shared_y); _y <= max(_y2, _shared_y); _y++) {
+                carve_tile_and_place_door(grid_, room1, room2, _x2, _y);
+            }
+
             return;
         }
     }
 
-    // Fall back to double bend
+    // === Fallback: Double Bend ===
     var _dx = abs(_x2 - _x1);
     var _dy = abs(_y2 - _y1);
     var _use_horizontal_first = _dx > _dy ? true : (_dy > _dx ? false : choose(true, false));
@@ -65,24 +92,24 @@ function create_connection(grid_, room1, room2) {
     if (_use_horizontal_first) {
         var _mid_x = _x1 + sign(_x2 - _x1) * floor(_dx / 2);
         for (var _x = min(_x1, _mid_x); _x <= max(_x1, _mid_x); _x++) {
-			carve_tile_and_place_door(grid_, room1, room2, _x, _y1)
+            carve_tile_and_place_door(grid_, room1, room2, _x, _y1);
         }
         for (var _y = min(_y1, _y2); _y <= max(_y1, _y2); _y++) {
-			carve_tile_and_place_door(grid_, room1, room2, _mid_x, _y)
+            carve_tile_and_place_door(grid_, room1, room2, _mid_x, _y);
         }
         for (var _x = min(_mid_x, _x2); _x <= max(_mid_x, _x2); _x++) {
-			carve_tile_and_place_door(grid_, room1, room2, _x, _y2)
+            carve_tile_and_place_door(grid_, room1, room2, _x, _y2);
         }
     } else {
         var _mid_y = _y1 + sign(_y2 - _y1) * floor(_dy / 2);
         for (var _y = min(_y1, _mid_y); _y <= max(_y1, _mid_y); _y++) {
-			carve_tile_and_place_door(grid_, room1, room2, _x1, _y)
+            carve_tile_and_place_door(grid_, room1, room2, _x1, _y);
         }
         for (var _x = min(_x1, _x2); _x <= max(_x1, _x2); _x++) {
-			carve_tile_and_place_door(grid_, room1, room2, _x, _mid_y)
+            carve_tile_and_place_door(grid_, room1, room2, _x, _mid_y);
         }
         for (var _y = min(_mid_y, _y2); _y <= max(_mid_y, _y2); _y++) {
-			carve_tile_and_place_door(grid_, room1, room2, _x2, _y)
+            carve_tile_and_place_door(grid_, room1, room2, _x2, _y);
         }
     }
 }
