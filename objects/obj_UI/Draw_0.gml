@@ -24,7 +24,7 @@ if text_toggle {
 	draw_set_valign(fa_middle)
 	draw_text(0, px, "Press 'f11' for fullscreen,")
 	draw_text(0, px*2, "'G' to regenerate level,")
-	draw_text(0, px*3, "'C' to toggle debug view,")
+	draw_text(0, px*3, "'C'/'B' to toggle debug views,")
 	draw_text(0, px*4, "'V' to toggle this text.")
 }
 draw_set_color(c_white)
@@ -64,7 +64,12 @@ if hover_ui_movement_area { draw_set_color(c_white) } else { draw_set_color(c_gr
 draw_rectangle(movement_slide_x1, display_height, movement_slide_x2, movement_slide_y, false);
 
 draw_set_alpha(1)
-draw_set_color(c_blue)
+draw_set_color(c_white)
+if (mouse_check_button(mb_left)) {
+	draw_set_color(c_red)
+} else if (mouse_check_button(mb_right)) {
+	draw_set_color(c_blue)
+}
 draw_point(mouse_x, mouse_y)
 draw_circle(mouse_x-0.5, mouse_y-0.5, 3, true)
 draw_set_color(c_white)
