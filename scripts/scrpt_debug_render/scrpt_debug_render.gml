@@ -78,16 +78,16 @@ function draw_room_debug_view(room_list, center_x, center_y, scale = 1) {
 
         draw_rectangle(left, top, right, bottom, true);
 
-        var cx = offset_x + _room.x * tile_size;
-        var cy = offset_y + _room.y * tile_size;
+        var cx = offset_x + _room.x * tile_size -tile_size/2;
+        var cy = offset_y + _room.y * tile_size -tile_size/2;
         var cs = ((_room.width + _room.height) / 2) * tile_size;
         draw_circle(cx, cy, cs / 4, true);
     }
 
     for (var i = 0; i < room_count; i++) {
         var _room = ds_list_find_value(room_list, i);
-        var cx1 = offset_x + _room.x * tile_size;
-        var cy1 = offset_y + _room.y * tile_size;
+        var cx1 = offset_x + _room.x * tile_size-tile_size/2;
+        var cy1 = offset_y + _room.y * tile_size-tile_size/2;
 
         var conn_count = ds_list_size(_room.connected_rooms);
         for (var j = 0; j < conn_count; j++) {
@@ -103,8 +103,8 @@ function draw_room_debug_view(room_list, center_x, center_y, scale = 1) {
             }
 
             if (other_room != undefined) {
-                var cx2 = offset_x + other_room.x * tile_size;
-                var cy2 = offset_y + other_room.y * tile_size;
+                var cx2 = offset_x + other_room.x * tile_size-tile_size/2;
+                var cy2 = offset_y + other_room.y * tile_size-tile_size/2;
                 draw_set_color(c_red);
                 draw_line(cx1, cy1, cx2, cy2);
             }

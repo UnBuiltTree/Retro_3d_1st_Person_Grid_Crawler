@@ -28,14 +28,7 @@ function create_connection(grid_, room1, room2) {
         if (array_length(_valid_x_list) > 0) {
             var _shared_x = _valid_x_list[irandom(array_length(_valid_x_list) - 1)];
             for (var _y = min(_y1, _y2); _y <= max(_y1, _y2); _y++) {
-				if  grid_[# _shared_x, _y] == global.TILE_WALL {
-					carve_tile(grid_, _shared_x, _y);
-					if is_perimeter(grid_, room1, _shared_x, _y) {
-						grid_[# _shared_x, _y] = global.TILE_DOOR;
-					} else if is_perimeter(grid_, room2, _shared_x, _y) {
-						grid_[# _shared_x, _y] = global.TILE_DOOR;
-					}
-				}
+				carve_tile_and_place_door(grid_, room1, room2, _shared_x, _y)
             }
             return;
         }
@@ -58,17 +51,7 @@ function create_connection(grid_, room1, room2) {
         if (array_length(_valid_y_list) > 0) {
             var _shared_y = _valid_y_list[irandom(array_length(_valid_y_list) - 1)];
             for (var _x = min(_x1, _x2); _x <= max(_x1, _x2); _x++) {
-				if  grid_[# _x, _shared_y] == global.TILE_WALL {
-					carve_tile(grid_, _x, _shared_y);
-					
-					if is_perimeter(grid_, room1, _x, _shared_y) {
-						grid_[# _x, _shared_y] = global.TILE_DOOR;
-					} else if is_perimeter(grid_, room2, _x, _shared_y) {
-						grid_[# _x, _shared_y] = global.TILE_DOOR;
-					}
-				} else {
-					carve_tile(grid_, _x, _shared_y);
-				}
+				carve_tile_and_place_door(grid_, room1, room2, _x, _shared_y)
             }
             return;
         }
@@ -82,24 +65,24 @@ function create_connection(grid_, room1, room2) {
     if (_use_horizontal_first) {
         var _mid_x = _x1 + sign(_x2 - _x1) * floor(_dx / 2);
         for (var _x = min(_x1, _mid_x); _x <= max(_x1, _mid_x); _x++) {
-            carve_tile(grid_, _x, _y1);
+			carve_tile_and_place_door(grid_, room1, room2, _x, _y1)
         }
         for (var _y = min(_y1, _y2); _y <= max(_y1, _y2); _y++) {
-            carve_tile(grid_, _mid_x, _y);
+			carve_tile_and_place_door(grid_, room1, room2, _mid_x, _y)
         }
         for (var _x = min(_mid_x, _x2); _x <= max(_mid_x, _x2); _x++) {
-            carve_tile(grid_, _x, _y2);
+			carve_tile_and_place_door(grid_, room1, room2, _x, _y2)
         }
     } else {
         var _mid_y = _y1 + sign(_y2 - _y1) * floor(_dy / 2);
         for (var _y = min(_y1, _mid_y); _y <= max(_y1, _mid_y); _y++) {
-            carve_tile(grid_, _x1, _y);
+			carve_tile_and_place_door(grid_, room1, room2, _x1, _y)
         }
         for (var _x = min(_x1, _x2); _x <= max(_x1, _x2); _x++) {
-            carve_tile(grid_, _x, _mid_y);
+			carve_tile_and_place_door(grid_, room1, room2, _x, _mid_y)
         }
         for (var _y = min(_mid_y, _y2); _y <= max(_mid_y, _y2); _y++) {
-            carve_tile(grid_, _x2, _y);
+			carve_tile_and_place_door(grid_, room1, room2, _x2, _y)
         }
     }
 }
@@ -126,6 +109,13 @@ function carve_tile(grid_, _x, _y) {
             }
         }
     }
+}
+
+function carve_tile_and_place_door(grid_, room1, room2, _x, _y) {
+	carve_tile(grid_, _x, _y);
+	if is_perimeter(grid_, room1, _x, _y) or is_perimeter(grid_, room2, _x, _y) {
+		grid_[# _x, _y] = global.TILE_DOOR;
+	}
 }
 
 function connect_rooms(room_list, room_id1, room_id2) {

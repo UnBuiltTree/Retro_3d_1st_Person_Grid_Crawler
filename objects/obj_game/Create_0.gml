@@ -24,7 +24,7 @@ global.player_x = player_x
 global.player_y = player_y
 player_angle	= 0;
 global.player_angle = player_angle;
-max_depth		= 24;
+max_depth		= 18;
 look_dist = (tile_width*max_depth*2)
 
 dx	= [0, 1, 0, -1];

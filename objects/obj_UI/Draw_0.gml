@@ -1,5 +1,3 @@
-
-
 if (!surface_exists(ui_surf)) {
     ui_surf = surface_create(360, 240);
     var tex = surface_get_texture(ui_surf);
@@ -8,20 +6,14 @@ if (!surface_exists(ui_surf)) {
 surface_set_target(ui_surf);
 draw_clear_alpha(c_black, 0);
 
+// --- --- Put draw stuff in here --- ---
+
 draw_set_color(c_white);
 if db_view_toggle {
 	draw_topdown_dungeon_debug(room_width/2, room_height/2);
 } else {
 	draw_topdown_dungeon_radar(80, 40, 16)
 }
-
-surface_reset_target();
-
-draw_surface(
-    ui_surf,
-    0, 0
-);
-
 
 if text_toggle {
 	var px = 12;
@@ -33,3 +25,12 @@ if text_toggle {
 	draw_text(0, px*3, "'C' to toggle debug view,")
 	draw_text(0, px*4, "'V' to toggle this text.")
 }
+
+// --- --- End drawing on UI --- ---
+
+surface_reset_target();
+
+draw_surface(
+    ui_surf,
+    0, 0
+);

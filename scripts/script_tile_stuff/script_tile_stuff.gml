@@ -1,5 +1,3 @@
-// Script assets have changed for v2.3.0 see
-// https://help.yoyogames.com/hc/en-us/articles/360005277377 for more information
 function adjacent_tiles(_gx, _gy){
 	return {
 		top    : global.main_grid[# _gx  , _gy-1],
@@ -9,17 +7,18 @@ function adjacent_tiles(_gx, _gy){
 	}
 }
 
-function adjacent_tiles_8(_gx, _gy){
+function adjacent_tiles_8(_gx, _gy) {
 	return {
-		top_left	: global.main_grid[# _gx-1, _gy-1],
-		top			: global.main_grid[# _gx  , _gy-1],
-		top_right	: global.main_grid[# _gx+1, _gy-1],
-		left		: global.main_grid[# _gx-1, _gy  ],
-		right		: global.main_grid[# _gx+1, _gy  ],
-		top_left	: global.main_grid[# _gx-1, _gy+1],
-		bottom		: global.main_grid[# _gx  , _gy+1],
-		top_right	: global.main_grid[# _gx+1, _gy+1],
-	}
+		top_left     : global.main_grid[# _gx-1, _gy-1],
+		top          : global.main_grid[# _gx  , _gy-1],
+		top_right    : global.main_grid[# _gx+1, _gy-1],
+		left         : global.main_grid[# _gx-1, _gy  ],
+		// center
+		right        : global.main_grid[# _gx+1, _gy  ],
+		bottom_left  : global.main_grid[# _gx-1, _gy+1],
+		bottom       : global.main_grid[# _gx  , _gy+1],
+		bottom_right : global.main_grid[# _gx+1, _gy+1],
+	};
 }
 
 function check_adjacent_for(_x, _y, _tile){
@@ -41,8 +40,30 @@ function check_adjacent_for(_x, _y, _tile){
 	return 1
 }
 
-// Script assets have changed for v2.3.0 see
-// https://help.yoyogames.com/hc/en-us/articles/360005277377 for more information
+function check_adjacent_for_opposing(_x, _y, _tile) {
+	if (_x <= 0 || _x >= grid_size - 1 || _y <= 0 || _y >= grid_size - 1) {
+		return false;
+	}
+
+	var neighbors = adjacent_tiles(_x, _y);
+
+	var top_match    = (neighbors.top    == _tile);
+	var bottom_match = (neighbors.bottom == _tile);
+	var left_match   = (neighbors.left   == _tile);
+	var right_match  = (neighbors.right  == _tile);
+
+	var match_count = top_match + bottom_match + left_match + right_match;
+
+	if (match_count == 2) {
+		if ((top_match && bottom_match) || (left_match && right_match)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+
 function create_tile(name_str, properties) {
     var const_name = "TILE_" + string_upper(name_str);
     variable_global_set(const_name, name_str);

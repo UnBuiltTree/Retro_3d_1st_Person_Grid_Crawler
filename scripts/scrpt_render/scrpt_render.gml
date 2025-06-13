@@ -104,7 +104,7 @@ function draw_cell(_gx, _gy, _offset_x, _offset_y, _tile_w, _tile_t, dist) {
 }
 
 function get_tint_from_distance(dist) {
-    var t = clamp(dist / (max_depth-2.75), 0, 1);
+    var t = clamp(dist / (max_depth/2), 0, 1);
     var brightness = 1.0 - t;
     var cval = floor(brightness * 255);
     return make_color_rgb(cval, cval, cval);
