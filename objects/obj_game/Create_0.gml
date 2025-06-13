@@ -4,16 +4,6 @@ if(instance_number(obj_game) > 1){
 
 draw_pattern = [];
 
-global.frame = 0;
-frame_timer = 0;
-frame_speed = game_get_speed(gamespeed_fps) div 8; // 8 frames per second
-
-// 360 × 240 UI buffer
-ui_surf = surface_create(display_width, display_height);
-if (surface_exists(ui_surf)) {
-    var ui_tex = surface_get_texture(ui_surf);
-}
-
 instance_create_layer(0, 0, "Debug", obj_dungeon_generator);
 
 tile_width = 64;
@@ -59,9 +49,6 @@ move_start_y	= player_y;
 move_target_x	= player_x;
 move_target_y	= player_y;
 
-text_toggle = true;
-db_view_toggle = false;
-
 function build_draw_pattern(radius) {
     for (var _layer = radius; _layer >= 1; _layer--) {
         for (var dy = -_layer; dy <= _layer; dy++) {
@@ -74,8 +61,12 @@ function build_draw_pattern(radius) {
     array_push(draw_pattern, [ 0, 0 ]);
 }
 
+global.draw_pattern = draw_pattern
+
 build_draw_pattern(max_depth);
 
 gpu_set_zwriteenable(true);
 gpu_set_ztestenable(true);
 draw_clear_depth(1);
+
+instance_create_layer(0, 0, "UILayer_1", obj_UI);
