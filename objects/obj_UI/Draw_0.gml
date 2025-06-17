@@ -8,7 +8,7 @@ draw_clear_alpha(c_black, 0);
 
 // --- --- Put draw stuff in here --- ---
 
-draw_sprite_ext(spr_pov_gun, 0, display_width-64+(mouse_x_offset/4), display_height-64+(mouse_y_offset/2), 2, 2, 0, c_white, 1)
+draw_sprite_ext(spr_pov_gun, 0, display_width/2+(mouse_x_offset/4)+16, display_height+(mouse_y_offset/2), 1, 1, 0, c_white, 1)
 
 draw_set_color(c_white);
 if db_view_toggle {
@@ -73,6 +73,31 @@ if (mouse_check_button(mb_left)) {
 draw_point(mouse_x, mouse_y)
 draw_circle(mouse_x-0.5, mouse_y-0.5, 3, true)
 draw_set_color(c_white)
+
+for (var i = 0; i < wave_lenth; ++i) {
+	var _x = i * spacing;
+	
+	var y_offset = ecg_array[i]
+	var y_offset_prev = y_offset
+	if (i > 0 && ecg_array[i - 1] != undefined) {
+		y_offset_prev = ecg_array[i-1]
+	}
+	
+	/*
+	draw_set_color(c_black)
+	
+	draw_line(_x, display_height/2-44, _x, display_height/2-76)
+	
+	draw_set_color(c_red)
+	
+	draw_point(_x, display_height/2-64 + y_offset)
+	*/
+	draw_set_color(c_lime)
+	//draw_line(_x, display_height/2-64 - y_offset, _x - spacing, display_height/2-64 - y_offset_prev)
+	
+	draw_line(_x, display_height/2-64 - y_offset, _x, display_height/2-64 - y_offset*0.5)
+	
+}
 
 
 // --- --- End drawing on UI --- ---

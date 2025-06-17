@@ -38,6 +38,7 @@ ui_knife_button = [display_width, (display_center)+32, display_width-32, (displa
 ui_knife_area = [display_width, (display_center)+64, display_width-64, (display_center)-64]
 
 
+
 hover_ui_movement_btn = false;
 hover_ui_movement_area = false;
 ui_movement_slide = 0;
@@ -45,5 +46,30 @@ ui_movement_slide_dist = 32;
 ui_movement_slide_target = 0;
 ui_movement_slide_speed = 6; // pixels per frame
 
-ui_movement_button = [display_middle+32, display_height, display_middle-32, display_height-16]
-ui_movement_area = [display_middle+128, display_height, display_middle-128, display_height-32]
+ui_movement_button = [display_middle+32, display_height, display_middle-32, display_height-16];
+ui_movement_area = [display_middle+128, display_height, display_middle-128, display_height-32];
+
+phase = 0;
+ecg_array = [];
+
+wave_lenth = 32;
+spacing = 1;
+amplitude = 16;
+frequency = 1;
+rate = 0.1
+
+beep_cooldown = 0;
+
+function simulated_ecg(length, amplitude, frequency, offset) {
+	var result = array_create(length, 0);
+	for (var i = 0; i < length; ++i) {
+		//var angle = (i/ length) * frequency * 2 * pi + offset;
+		var t = (i/ length) * frequency * 2 * pi + offset 
+	    var phase = 2.0 * cos ( t )
+	    var r_wave = -sin ( t + phase )
+	    var q_scalar = 0.50 - 0.75 * sin ( t - 1.0 )
+	    var s_scalar = 0.25 - 0.125 * sin ( 1.25 * phase - 1.0 )
+		result[i] = (pi * q_scalar * r_wave * s_scalar)*amplitude;
+	}
+	return result;
+}

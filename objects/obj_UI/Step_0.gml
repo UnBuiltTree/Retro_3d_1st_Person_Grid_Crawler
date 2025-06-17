@@ -19,6 +19,22 @@ if (keyboard_check_pressed(ord("C"))) {
     db_view_toggle = !db_view_toggle;
 }
 
+phase += rate;
+
+ecg_array = simulated_ecg(wave_lenth, amplitude, frequency, phase)
+
+if (beep_cooldown > 0) {
+    beep_cooldown -= 1;
+}
+
+if (ecg_array[1] > amplitude - 1 && beep_cooldown <= 0) {
+    var beep = audio_play_sound(heartrate_beep, 1, false);
+	audio_sound_gain(beep, 0.025, 0);
+    show_debug_message(ecg_array[1]);
+    beep_cooldown = 30;
+}
+
+
 // Reset hovers
 hover_ui_empty = false;
 hover_ui_knife_btn = false;

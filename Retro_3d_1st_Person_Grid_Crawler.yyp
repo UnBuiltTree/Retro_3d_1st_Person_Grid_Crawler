@@ -52,6 +52,7 @@
     {"id":{"name":"scrpt_util","path":"scripts/scrpt_util/scrpt_util.yy",},},
     {"id":{"name":"struct_room","path":"scripts/struct_room/struct_room.yy",},},
     {"id":{"name":"validate","path":"scripts/validate/validate.yy",},},
+    {"id":{"name":"heartrate_beep","path":"sounds/heartrate_beep/heartrate_beep.yy",},},
     {"id":{"name":"spr_ceil","path":"sprites/spr_ceil/spr_ceil.yy",},},
     {"id":{"name":"spr_digital","path":"sprites/spr_digital/spr_digital.yy",},},
     {"id":{"name":"spr_door_1","path":"sprites/spr_door_1/spr_door_1.yy",},},
