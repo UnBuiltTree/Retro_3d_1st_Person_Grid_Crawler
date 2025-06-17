@@ -37,7 +37,7 @@ for (var i = 1; i < 32; ++i) {
 	
 	show_debug_message(string(_room_width) + ", " + string(_room_width))
 
-    var closeness = 2;
+    var closeness = irandom_range(3, 6);
 	var choas = 5;
 
     var new_room = find_room_place(
