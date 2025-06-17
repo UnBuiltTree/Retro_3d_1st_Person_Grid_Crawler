@@ -48,7 +48,7 @@ draw_rectangle(slide_x, slide_y1, display_width, slide_y2, false);
 draw_set_alpha(1)
 
 if ui_knife_slide > 0 {
-	draw_sprite_ext(spr_knife, 0, slide_x+30, display_center, 2, 2, 0, c_white, 1)
+	draw_sprite_ext(spr_knife, 0, slide_x+30, display_center, 1, 1, 0, c_white, 1)
 }
 
 draw_set_alpha(1)

@@ -38,13 +38,38 @@ function draw_dungeon() {
         var rel_angle = angle_difference(pa, ang_to_cell);
         if (abs(rel_angle) > cone_half_angle) continue;
 		
-        draw_cell(gx, gy, offset_x, offset_y, tile_width, tile_tall, dist);
+		var tint_color = get_tint_from_distance(dist);
+        draw_cell(gx, gy, offset_x, offset_y, tile_width, tile_tall, tint_color);
+		draw_entities_at_tile(gx, gy, offset_x, offset_y, tile_width, tile_tall, -ang_to_cell+90, tint_color);
     }
 
     matrix_set(matrix_world, matrix_build_identity());
 }
 
-function draw_cell(_gx, _gy, _offset_x, _offset_y, _tile_w, _tile_t, dist) {
+function draw_entities_at_tile(_gx, _gy, _offset_x, _offset_y, _tile_w, _tile_t, ang, tint_color) {
+    var list = get_entities_at(_gx, _gy);
+    var cnt  = (list != undefined) ? ds_list_size(list) : 0;
+    if (cnt == 0) return;
+
+	var _wx = (_gx + _offset_x) * _tile_w
+	var _wy = (_gy + _offset_y) * _tile_w
+
+    for (var i = 0; i < cnt; i++) {
+        var ent = list[| i];
+
+        if (!is_struct(ent) || !variable_struct_exists(ent, "sprite")) continue;
+
+        var spr = ent.sprite;
+        if (spr >= 0) {
+            var tint = c_white;
+
+            draw_pane(_wx, _wy, ang, spr, tint_color);
+        }
+    }
+}
+
+
+function draw_cell(_gx, _gy, _offset_x, _offset_y, _tile_w, _tile_t, tint_color) {
 	var tile_key = global.main_grid[# _gx, _gy];
     var tile_info = ds_map_find_value(global.tile_definitions, tile_key);
 	if (tile_info = undefined) { return }
@@ -53,7 +78,6 @@ function draw_cell(_gx, _gy, _offset_x, _offset_y, _tile_w, _tile_t, dist) {
 	} else {
 		gpu_set_zwriteenable(true);
 	}
-	var tint_color = get_tint_from_distance(dist);
 	var _px = (_gx + _offset_x) * _tile_w
 	var _py = (_gy + _offset_y) * _tile_w
 	switch (tile_key) {
