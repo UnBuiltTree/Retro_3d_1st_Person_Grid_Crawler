@@ -6,6 +6,12 @@ draw_pattern = [];
 
 instance_create_layer(0, 0, "Debug", obj_dungeon_generator);
 
+global.entity_grid = array_create(grid_size*grid_size)
+
+for (var i = 0; i < array_length(global.entity_grid); ++i) {
+    global.entity_grid[i] = ds_list_create();
+}
+
 tile_width = 64;
 tile_tall  = 48;
 
@@ -70,3 +76,17 @@ gpu_set_ztestenable(true);
 draw_clear_depth(1);
 
 instance_create_layer(0, 0, "UILayer_1", obj_UI);
+
+var entity_x = global.MAP_OFFSET_X;
+var entity_y = global.MAP_OFFSET_Y;
+
+
+for (var i = 0; i < 2; ++i) {
+	for (var j = 0; j < 2; ++j) {
+		entity_create(entity_x+i, entity_y+j, "test", {
+	    sprite: spr_entity
+		});
+	}
+}
+
+
